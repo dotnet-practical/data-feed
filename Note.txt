@@ -20,6 +20,7 @@ DNQ.DataFeed.Infrastructure
 
 tests
 	[Project].Tests.[TypeOfTest]
+	DNQ.DataFeed.Application.Tests.Api
 	DNQ.DataFeed.Application.Tests.Unit
 	DNQ.DataFeed.Domain.Tests.Unit
 	
