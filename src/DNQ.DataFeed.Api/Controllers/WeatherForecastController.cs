@@ -31,4 +31,3 @@ namespace DNQ.DataFeed.Api.Controllers
         }
     }
 }
-}}
