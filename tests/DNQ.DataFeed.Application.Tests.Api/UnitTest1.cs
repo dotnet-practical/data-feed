@@ -5,7 +5,7 @@ namespace DNQ.DataFeed.Application.Tests.Api
         [Fact]
         public void Test1()
         {
-            Assert.Equal(1, 1);
+            Assert.Equal(0, 1);
         }
     }
 }
