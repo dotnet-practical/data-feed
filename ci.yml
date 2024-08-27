@@ -25,3 +25,8 @@ jobs:
     - name: 'Publish'
       run: |
         dotnet publish src/DNQ.DataFeed.Api/DNQ.DataFeed.Api.csproj --configuration Release -o artifacts
+
+    - uses: actions/upload-artifact@v4
+      with: 
+        name: artifact
+        path: artifacts/
