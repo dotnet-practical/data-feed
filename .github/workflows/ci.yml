@@ -30,3 +30,20 @@ jobs:
       with: 
         name: artifact
         path: artifacts/
+
+  deploy_dev:
+     name: CD
+     runs-on: ubuntu-lastest
+     needs: build
+
+     steps:
+     - uses: actions/dowload-artifact@v4
+       with: 
+         name: artifact
+         path: artifacts/
+
+     - name: 'Run Azure webapp deploy action using publish profile credentials'
+       uses: azure/webapps-deploy@v2
+       with: 
+        app-name: app-datafeed-dnquangit-dev 
+        package: artifacts/
