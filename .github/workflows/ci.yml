@@ -39,6 +39,7 @@ jobs:
      name: CD
      runs-on: ubuntu-latest
      needs: build
+     environment: dev
 
      steps:
      - uses: actions/download-artifact@v4
