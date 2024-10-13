@@ -20,6 +20,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\ci.yml = .github\workflows\ci.yml
 		.github\workflows\pr-verify.yml = .github\workflows\pr-verify.yml
+		.github\workflows\step-deploy.yml = .github\workflows\step-deploy.yml
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNQ.DataFeed.Application.Tests.Api", "tests\DNQ.DataFeed.Application.Tests.Api\DNQ.DataFeed.Application.Tests.Api.csproj", "{E26E65F0-5313-4E29-959E-A5AE9C87687D}"
