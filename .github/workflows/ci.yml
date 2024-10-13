@@ -34,6 +34,17 @@ jobs:
       with: 
         name: artifact
         path: artifacts/
+  
+  deploy_dev2:
+     name: Deploy dev2
+     needs: build
+     uses: ./.github/workflows/step-deploy.yml
+     with:
+       env: dev 
+     secrets: 
+       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
   deploy_dev:
      name: Deploy dev
