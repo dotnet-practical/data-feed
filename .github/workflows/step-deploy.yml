@@ -15,7 +15,7 @@ jobs:
   deploy:
      name: Deploy ${{inputs.env}}
      runs-on: ubuntu-latest
-     enviroment: ${{inputs.env}}
+     environment: ${{inputs.env}}
 
      steps:
      - uses: actions/download-artifact@v4
