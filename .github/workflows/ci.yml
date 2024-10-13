@@ -82,5 +82,5 @@ jobs:
      - name: 'Deploy prod'
        uses: azure/webapps-deploy@v2
        with: 
-        app-name: app-datafeed-dnquangit-dev
+        app-name: app-datafeed-dnquangit-dev2
         package: artifacts/
