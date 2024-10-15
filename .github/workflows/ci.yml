@@ -38,7 +38,7 @@ jobs:
   deploy_dev:
      name: Deploy dev
      needs: build
-     uses: dotnet-practical/github-actions-reusable/tree/master/.github/workflows/step-deploy.yml
+     uses: dotnet-practical/github-actions-reusable/tree/master/.github/workflows/step-deploy.yml@master
      with:
        env: dev 
      secrets: 
@@ -49,7 +49,7 @@ jobs:
   deploy_prod:
      name: Deploy prod
      needs: deploy_dev
-     uses: dotnet-practical/github-actions-reusable/tree/master/.github/workflows/step-deploy.yml
+     uses: dotnet-practical/github-actions-reusable/tree/master/.github/workflows/step-deploy.yml@master
      with:
        env: prod 
      secrets: 
