@@ -38,7 +38,7 @@ jobs:
   deploy_dev:
      name: Deploy dev
      needs: build
-     uses: .github/workflows/step-deploy.yml
+     uses: ./.github/workflows/step-deploy.yml
      with:
        env: dev
        resource_group_name: rg-datafeed-dev
@@ -51,7 +51,7 @@ jobs:
   deploy_prod:
      name: Deploy prod
      needs: deploy_dev
-     uses: dotnet-practical/github-actions-reusable/.github/workflows/step-deploy.yml@master
+     uses: ./.github/workflows/step-deploy.yml
      with:
        env: prod 
        resource_group_name: rg-datafeed-pro
