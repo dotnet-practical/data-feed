@@ -55,7 +55,7 @@ jobs:
      with:
        env: prod 
        resource_group_name: rg-datafeed-pro
-       app_service_name: app-datafeed-dnquangit-pro
+       app_service_name: app-datafeed-dnquangit-prod
      secrets: 
        AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
        AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
