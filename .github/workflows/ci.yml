@@ -38,9 +38,11 @@ jobs:
   deploy_dev:
      name: Deploy dev
      needs: build
-     uses: dotnet-practical/github-actions-reusable/.github/workflows/step-deploy.yml@master
+     uses: .github/workflows/step-deploy.yml
      with:
-       env: dev 
+       env: dev
+       resource_group_name: rg-datafeed-dev
+       app_service_name: app-datafeed-dnquangit-dev
      secrets: 
        AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
        AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
@@ -52,6 +54,8 @@ jobs:
      uses: dotnet-practical/github-actions-reusable/.github/workflows/step-deploy.yml@master
      with:
        env: prod 
+       resource_group_name: rg-datafeed-pro
+       app_service_name: app-datafeed-dnquangit-pro
      secrets: 
        AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
        AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}

@@ -4,6 +4,12 @@ on:
       env:
         required: true
         type: string
+      resource_group_name: 
+        required: true 
+        type: string
+      app_service_name: 
+        required: true 
+        type: string
     secrets:
       AZURE_CLIENT_ID:
         required: true
@@ -35,3 +41,7 @@ jobs:
        with: 
         app-name: app-datafeed-dnquangit-${{ inputs.env }} 
         package: artifacts/    
+
+     - name: Swap slots 
+       run: |
+         az webapp deployment slot swap -g ${{ inputs.resource_group_name }} -n ${{ inputs.app_service_name }} --slot slot --target-slot production --verbose
