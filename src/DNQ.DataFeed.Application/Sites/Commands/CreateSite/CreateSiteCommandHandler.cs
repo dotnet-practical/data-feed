@@ -1,7 +1,6 @@
 ﻿using DNQ.DataFeed.Domain.Common.Interfaces;
 using DNQ.DataFeed.Domain.Sites;
 using MediatR;
-using System.ComponentModel.DataAnnotations;
 
 namespace DNQ.DataFeed.Application.Sites.Commands.CreateSite;
 

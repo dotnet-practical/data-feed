@@ -14,6 +14,12 @@ public static class ApiEndPoint
             public const string Create = Base;
 
             public const string Update = $"{Base}/{{id}}";
+
+            public const string Delete = $"{Base}/{{id}}";
+
+            public const string Get = $"{Base}/{{id}}";
+
+            public const string List = $"{Base}";
         }
     }
 }

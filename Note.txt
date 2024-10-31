@@ -80,6 +80,19 @@ Add site api
 		
 	add validation package to Domain 
 	
+------------------------------------------------------------------------------------------
+
+	standard resutl api
+	
+		1. move model validation to fluent api validation 
+			---
+			add data anonation validation 
+		
+		2. add BussinessException, ValidationException(Validation payload, validtion parameter), NotFoundException(not found resource to process)
+		
+		3. at ExceptionHandlerExtensions.cs , catch BussinessException, ValidationException, NotFoundException and throw reponse. 
+			
+	
 		
 	
 	

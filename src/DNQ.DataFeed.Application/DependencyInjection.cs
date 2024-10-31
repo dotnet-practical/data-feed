@@ -1,8 +1,7 @@
-﻿using DNQ.DataFeed.Application.Sites.Commands.CreateSite;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using MediatR;
-using System.Reflection;
-using DNQ.DataFeed.Domain;
+using DNQ.DataFeed.Application.Common.Behaviors;
+using FluentValidation;
 
 namespace DNQ.DataFeed.Application;
 
@@ -14,6 +13,10 @@ public static class DependencyInjection
         {
             options.RegisterServicesFromAssemblyContaining(typeof(DependencyInjection));
         });
+
+        services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
+
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
         return services;
     }

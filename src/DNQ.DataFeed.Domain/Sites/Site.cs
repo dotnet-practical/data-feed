@@ -17,13 +17,13 @@ public class Site
     }
     internal void SetCode(string newCode)
     {
-        if (string.IsNullOrEmpty(newCode)) throw new DomainException("Site code cannot be empty.");
+        if (string.IsNullOrEmpty(newCode)) throw new BussinessException("Site code cannot be empty.");
         Code = newCode;
     }
 
     internal void SetName(string newName)
     {
-        if (string.IsNullOrEmpty(newName)) throw new DomainException("Site name cannot be empty.");
+        if (string.IsNullOrEmpty(newName)) throw new BussinessException("Site name cannot be empty.");
         Name = newName;
     }
 }

@@ -2,10 +2,11 @@
 using DNQ.DataFeed.Domain.Common.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Net;
 using System.Text.Json;
+using System.Text.Json.Serialization;
+using ValidationException = FluentValidation.ValidationException;
 
 namespace DNQ.DataFeed.Api.Middlewares;
 
@@ -42,11 +43,12 @@ public static class ExceptionHandlerExtensions
             {
                 Status = StatusCode(ex),
                 Title = Title(ex),
-                Detail = ex.Message,
+                Detail = Detail(ex),
                 Instance = $"{httpContext.Request.Method} {httpContext.Request.Path}"
             };
 
             problem.Extensions["traceId"] = TraceId(httpContext);
+            problem.Extensions["errors"] = Errors(ex);
 
             //Serialize the problem details object to the Response as JSON (using System.Text.Json)
             httpContext.Response.ContentType = "application/problem+json";
@@ -62,7 +64,7 @@ public static class ExceptionHandlerExtensions
         {
             NotFoundException => (int)HttpStatusCode.NotFound,
             ValidationException => (int)HttpStatusCode.BadRequest,
-            DomainException => (int)HttpStatusCode.BadRequest,
+            BussinessException => (int)HttpStatusCode.BadRequest,
             _ => (int)HttpStatusCode.InternalServerError
         };
     }
@@ -73,13 +75,51 @@ public static class ExceptionHandlerExtensions
         {
             NotFoundException => "Resource Not Found",
             ValidationException => "Validation Error",
-            DomainException => "Business Error",
-            _ => "An Unexpected Error Occurred"
+            BussinessException => "Business Rule Violation",
+            _ => "Server Error"
         };
     }
+    private static string Detail(Exception exception)
+    {
+        return exception switch
+        {
+            NotFoundException => "The requested resource was not found.",
+            ValidationException => "The request is invalid.",
+            BussinessException => "The request is deemed invalid as it fails to meet business rule expectations.",
+            _ => "The server encountered an unexpected error."
+        };
+    }
+
+    private static ProblemDetailError[]? Errors(Exception exception)
+    {
+        return exception switch
+        {
+            NotFoundException => new ProblemDetailError[] {new(exception.Message) },
+            ValidationException => ValidationExceptionErrors(exception),
+            BussinessException => new ProblemDetailError[] { new(exception.Message) },
+            _ => null
+        };
+    }
+
+    private static ProblemDetailError[] ValidationExceptionErrors(Exception exception)
+    {
+        return ((ValidationException)exception).Errors.Select(x => new ProblemDetailError(x.ErrorMessage)).ToArray();
+    }
+
 
     private static string? TraceId(HttpContext httpContext)
     {
         return Activity.Current?.Id ?? httpContext?.TraceIdentifier;
+    }
+}
+
+public class ProblemDetailError
+{
+    [JsonPropertyName("detail")]
+    public string Detail { get; init; }
+
+    public ProblemDetailError(string detail)
+    {
+        Detail = detail;
     }
 }

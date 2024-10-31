@@ -16,7 +16,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.ConfigureCustomModelValidationResponse();
+//builder.Services.ConfigureCustomModelValidationResponse();
 
 var app = builder.Build();
 
