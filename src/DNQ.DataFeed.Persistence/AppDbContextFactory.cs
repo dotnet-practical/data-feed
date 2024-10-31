@@ -59,7 +59,14 @@ public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
     {
         var currentDirectory = Directory.GetCurrentDirectory(); // DNQ.DataFeed.Persistence
 
-        string parentDirectory = Directory.GetParent(currentDirectory).FullName; //src
+        var parentDirectoryInfor = Directory.GetParent(currentDirectory);
+
+        if (parentDirectoryInfor == null)
+        {
+            throw new InvalidOperationException("Cannot determine the parent directory of the current directory.");
+        }
+
+        var parentDirectory = parentDirectoryInfor.FullName; //src
 
         string apiDirectory = Path.Combine(parentDirectory, "DNQ.DataFeed.Api");
 

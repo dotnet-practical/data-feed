@@ -58,6 +58,29 @@ Add site table
 					dotnet ef database update
 					
 		- naming table with lower letter and underscore  
+		
+Add site api
+	version ?
+		creater folder V1 inside controllers 
+		
+	add folder 
+		api
+			contracts 
+				V1 
+					CreateSiteRequest.cs 
+				
+	add folder 
+		application 
+			Sites 
+				Commands
+					CreateSite 
+						CreateSiteCommand.cs
+						CreateSiteCommandHandler.cs
+				Queries 
+		
+	add validation package to Domain 
+	
+		
 	
 	
 

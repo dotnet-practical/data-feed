@@ -1,29 +1,29 @@
-﻿namespace DNQ.DataFeed.Domain.Sites;
+﻿using DNQ.DataFeed.Domain.Common.Exceptions;
+
+namespace DNQ.DataFeed.Domain.Sites;
 
 public class Site
 {
     public Guid Id { get; private set; }
-    public string Code { get; private set; } /* Has the rule */
-    public string Name { get; private set; } /* Has the rule */
-    public bool Deleted { get; set; }
-    protected Site() { }
-
-    public Site(string code, string name, Guid? id = null)
+    public string Code { get; internal set; } = null!;    /* Has the rule */
+    public string Name { get; internal set; } = null!;    /* Has the rule */
+    public bool Deleted { get; private set; }
+    private Site() { }
+    internal Site(string code, string name, Guid? id = null)
     {
         SetCode(code);
         SetName(name);
         Id = id ?? Guid.NewGuid();
     }
-
-    public void SetCode(string newCode)
+    internal void SetCode(string newCode)
     {
-        /* TODO: throw error if found another site has same code */
+        if (string.IsNullOrEmpty(newCode)) throw new DomainException("Site code cannot be empty.");
         Code = newCode;
     }
 
-    public void SetName(string newName)
+    internal void SetName(string newName)
     {
-        /* TODO: throw error if found another site has same code */
+        if (string.IsNullOrEmpty(newName)) throw new DomainException("Site name cannot be empty.");
         Name = newName;
     }
 }
