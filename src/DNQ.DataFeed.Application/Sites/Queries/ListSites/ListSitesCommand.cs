@@ -1,7 +1,6 @@
 ﻿using DNQ.DataFeed.Application.Sites.Queries.Dtos;
 using MediatR;
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
 
 namespace DNQ.DataFeed.Application.Sites.Queries.ListSites;
 
@@ -15,4 +14,11 @@ public class ListSitesCommand: IRequest<List<SiteDto>>
 
     [Display(Name = "sort")]
     public string? Sort { get; init; }
+
+    public ListSitesCommand(string? code, string? name, string? sort) 
+    {
+        Code = code;
+        Name = name;
+        Sort = sort;
+    }
 }

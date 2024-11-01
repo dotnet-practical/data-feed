@@ -1,5 +1,6 @@
 ﻿using System.Linq.Expressions;
 using System.Reflection;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace DNQ.DataFeed.Persistence.Extensions;
 
@@ -55,5 +56,15 @@ public static class IQueryableExtensions
             source.Expression, Expression.Quote(lambda));
 
         return source.Provider.CreateQuery<T>(resultExpression);
+    }
+
+    public static IQueryable<T> Paging<T>(this IQueryable<T> source, int? page, int? pageSize)
+    {
+        if (page == null || pageSize == null)
+            return source;
+
+        source = source.Skip((page.Value - 1) * pageSize.Value).Take(pageSize.Value);
+
+        return source;
     }
 }

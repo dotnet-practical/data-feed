@@ -1,4 +1,5 @@
 using DNQ.DataFeed.Api.Middlewares;
+using DNQ.DataFeed.Api.Swaggers;
 using DNQ.DataFeed.Application;
 using DNQ.DataFeed.Domain;
 using DNQ.DataFeed.Persistence;

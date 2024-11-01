@@ -25,6 +25,11 @@ public class SiteRepo : ISiteRepo
         return _dbContext.Sites.AsQueryable();
     }
 
+    public async Task<int> CountAsync(Expression<Func<Site, bool>> predicate)
+    {
+        return await _dbContext.Sites.Where(predicate).CountAsync();
+    }
+
     public async Task<bool> ExistsAsync(Expression<Func<Site, bool>> predicate)
     {
         return await _dbContext.Sites.AnyAsync(predicate);
@@ -35,13 +40,15 @@ public class SiteRepo : ISiteRepo
         return await _dbContext.Sites.FirstOrDefaultAsync(predicate);
     }
 
-    public async Task<List<Site>> ListAsync(Expression<Func<Site, bool>> predicate, string? sort)
+    public async Task<List<Site>> ListAsync(Expression<Func<Site, bool>> predicate, string? sort, int? page, int? pageSize)
     {
         var query = AsQueryable();
 
         query = query.Where(predicate);
 
         query = query.ApplySort(sort);
+
+        query = query.Paging(page, pageSize);
 
         var sites = await query.ToListAsync();
 

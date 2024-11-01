@@ -41,7 +41,7 @@ public static class ExceptionHandlerExtensions
         {
             var problem = new ProblemDetails
             {
-                Status = StatusCode(ex),
+                Status = Status(ex),
                 Title = Title(ex),
                 Detail = Detail(ex),
                 Instance = $"{httpContext.Request.Method} {httpContext.Request.Path}"
@@ -58,7 +58,7 @@ public static class ExceptionHandlerExtensions
         }
     }
 
-    private static int StatusCode(Exception exception)
+    private static int Status(Exception exception)
     {
         return exception switch
         {

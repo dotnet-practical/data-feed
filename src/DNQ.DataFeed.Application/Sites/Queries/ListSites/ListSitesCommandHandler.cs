@@ -28,7 +28,7 @@ public class ListSitesCommandHandler : IRequestHandler<ListSitesCommand, List<Si
             predicate = predicate.And(x => x.Name.Contains(request.Name));
         }
 
-        var sites = await _siteRepo.ListAsync(predicate, request.Sort);
+        var sites = await _siteRepo.ListAsync(predicate, request.Sort, null, null);
 
         return sites.Select(x => new SiteDto { Id = x.Id, Name = x.Name, Code = x.Code }).ToList(); 
     }

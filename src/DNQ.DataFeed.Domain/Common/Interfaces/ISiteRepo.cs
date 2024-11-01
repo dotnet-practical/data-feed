@@ -43,7 +43,8 @@ public interface ISiteRepo
     Task UpdateSite(Site site);
     Task RemoveSite(Site site);
     Task<Site> FirstOrDefaultAsync(Expression<Func<Site, bool>> predicate);
-    Task<List<Site>> ListAsync(Expression<Func<Site, bool>> predicate, string? sort = null);
+    Task<List<Site>> ListAsync(Expression<Func<Site, bool>> predicate, string? sort, int? page, int? pageSize);
+    Task<int> CountAsync(Expression<Func<Site, bool>> predicate);
     Task<bool> ExistsAsync(Expression<Func<Site, bool>> predicate);
     IQueryable<Site> AsQueryable();
 }

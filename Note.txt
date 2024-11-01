@@ -93,7 +93,53 @@ Add site api
 		3. at ExceptionHandlerExtensions.cs , catch BussinessException, ValidationException, NotFoundException and throw reponse. 
 			
 	
+--------------------------------------------------------------------------------------------
+	
+	
+	filter, sort api 
+	
+		filter at repo 
 		
-	
-	
+			use ef core with expression tree 
 
+		sort at repo 
+			
+			parse sort str and build a query 
+			
+--------------------------------------------------------------------------------------------
+
+	paging 
+	
+		{
+			data : [],
+			paging: {
+			}
+		}
+		
+		----
+		get
+		{
+		}
+		
+		----
+		list 
+		[]
+		
+		----
+		list with paging 
+		{
+			"data": [],
+			"paging" : {
+				"size": 10,
+				"n": 1,
+				"total"
+			}
+		}
+		
+			---------------
+			var pagingRequest = parse from request;
+			var data = await _repo.List();
+			var count = await _repo.Count();
+			
+			var pagingResponse = new PagingResponse(data, count, pagingRequest);
+			
