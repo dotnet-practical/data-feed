@@ -46,7 +46,7 @@ public class SiteRepo : ISiteRepo
 
         query = query.Where(predicate);
 
-        query = query.ApplySort(sort);
+        query = query.Sorting(sort);
 
         query = query.Paging(page, pageSize);
 

@@ -20,6 +20,10 @@ public static class ApiEndPoint
             public const string Get = $"{Base}/{{id}}";
 
             public const string List = $"{Base}";
+
+            public const string ListWithPaging = $"{Base}/paging";
+
+            public const string ListWithPagingNext = $"{Base}/paging-next";
         }
     }
 }

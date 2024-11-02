@@ -1,0 +1,145 @@
+-----------------------------------------------------
+
+------------add global.json------------------------
+{
+  "sdk": {
+    "version": "6.0.419",
+    "rollForward": "latestFeature",
+    "allowPrerelease": false
+  }
+}
+
+-------------Naming project------------------------
+DNQ.DataFeed.[LayerName]
+DNQ.DataFeed.Api
+DNQ.DataFeed.Contract
+DNQ.DataFeed.Application
+DNQ.DataFeed.Domain
+DNQ.DataFeed.Persistence
+DNQ.DataFeed.Infrastructure
+
+tests
+	[Project].Tests.[TypeOfTest]
+	DNQ.DataFeed.Application.Tests.Api
+	DNQ.DataFeed.Application.Tests.Unit
+	DNQ.DataFeed.Domain.Tests.Unit
+-------------DF-1------------------------
+DF-1-Add-Site-Api 
+DF-1: 
+Add site table
+
+	use mysql 
+	add site class
+		han chế public property
+	sperate by technial concern or business concern??
+	
+	intergrate mysql with source 
+		
+		DNQ.DataFeed.Infrastructure project
+			include package 
+				Pomelo.EntityFrameworkCore.MySql 6.0.0
+				Microsoft.EntityFrameworkCore.Design 6.0.0
+				
+		- add db context
+		- add dependency injection
+		- add fluent api configurations
+		- add db context design 
+			include package
+				Microsoft.Extensions.Configuration        6.0.0
+				Microsoft.Extensions.Configuration.Json   6.0.0
+		- add migrations
+			How to 
+				cd ()..)\SBill.Persistence 
+				add migration 
+					dotnet ef migrations add Init -o Migrations -- --environment Development 
+				remove previous migration 
+					dotnet ef migrations remove -o Migrations -- --environment Development 
+				update datbase 
+					dotnet ef database update
+					
+		- naming table with lower letter and underscore  
+		
+Add site api
+	version ?
+		creater folder V1 inside controllers 
+		
+	add folder 
+		api
+			contracts 
+				V1 
+					CreateSiteRequest.cs 
+				
+	add folder 
+		application 
+			Sites 
+				Commands
+					CreateSite 
+						CreateSiteCommand.cs
+						CreateSiteCommandHandler.cs
+				Queries 
+		
+	add validation package to Domain 
+	
+------------------------------------------------------------------------------------------
+
+	standard resutl api
+	
+		1. move model validation to fluent api validation 
+			---
+			add data anonation validation 
+		
+		2. add BussinessException, ValidationException(Validation payload, validtion parameter), NotFoundException(not found resource to process)
+		
+		3. at ExceptionHandlerExtensions.cs , catch BussinessException, ValidationException, NotFoundException and throw reponse. 
+			
+	
+--------------------------------------------------------------------------------------------
+	
+	
+	filter, sort api 
+	
+		filter at repo 
+		
+			use ef core with expression tree 
+
+		sort at repo 
+			
+			parse sort str and build a query 
+			
+--------------------------------------------------------------------------------------------
+
+	paging 
+	
+		{
+			data : [],
+			paging: {
+			}
+		}
+		
+		----
+		get
+		{
+		}
+		
+		----
+		list 
+		[]
+		
+		----
+		list with paging 
+		{
+			"data": [],
+			"paging" : {
+				"pageSize": 10,
+				"pageNumber": 1,
+				""
+			}
+		}
+		
+			---------------
+			var pagingRequest = parse from request;
+			var data = await _repo.List();
+			var count = await _repo.Count();
+			
+			var pagingResponse = new PagingResponse(data, count, pagingRequest);
+			

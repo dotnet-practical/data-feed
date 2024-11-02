@@ -2,6 +2,7 @@
 using DNQ.DataFeed.Application.Sites.Commands.DeleteSite;
 using DNQ.DataFeed.Application.Sites.Commands.UpdateSite;
 using DNQ.DataFeed.Application.Sites.Queries.GetSite;
+using DNQ.DataFeed.Application.Sites.Queries.ListSites;
 using DNQ.DataFeed.Application.Sites.Queries.ListSitesPaging;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -52,9 +53,23 @@ public class SiteController: ControllerBase
     }
 
     [HttpGet(ApiEndPoint.V1.Sites.List)]
-    public async Task<IActionResult> List([FromQuery] ListSitesPagingCommand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> List([FromQuery] ListSitesCommand command, CancellationToken cancellationToken)
     {
         var dto = await _mediator.Send(command);
         return Ok(dto);
     }
+
+    [HttpGet(ApiEndPoint.V1.Sites.ListWithPaging)]
+    public async Task<IActionResult> ListWithPaging([FromQuery] ListSitesPagingCommand command, CancellationToken cancellationToken)
+    {
+        var dto = await _mediator.Send(command);
+        return Ok(dto);
+    }
+
+    //[HttpGet(ApiEndPoint.V1.Sites.ListWithPagingNext)]
+    //public async Task<IActionResult> ListWithPagingNext([FromQuery] ListSitesPagingCommand command, CancellationToken cancellationToken)
+    //{
+    //    var dto = await _mediator.Send(command);
+    //    return Ok(dto);
+    //}
 }

@@ -6,7 +6,7 @@ namespace DNQ.DataFeed.Persistence.Extensions;
 
 public static class IQueryableExtensions
 {
-    public static IQueryable<T> ApplySort<T>(this IQueryable<T> source, string? sortBy)
+    public static IQueryable<T> Sorting<T>(this IQueryable<T> source, string? sortBy)
     {
         if (string.IsNullOrEmpty(sortBy))
             return source;
