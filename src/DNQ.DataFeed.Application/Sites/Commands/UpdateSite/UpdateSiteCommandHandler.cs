@@ -9,9 +9,9 @@ public class UpdateSiteCommandHandler : IRequestHandler<UpdateSiteCommand>
 {
     private readonly ISiteRepo _siteRepo;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly SiteManager _siteManager;
+    private readonly ISiteManager _siteManager;
 
-    public UpdateSiteCommandHandler(ISiteRepo siteRepo, SiteManager siteManager, IUnitOfWork unitOfWork)
+    public UpdateSiteCommandHandler(ISiteRepo siteRepo, ISiteManager siteManager, IUnitOfWork unitOfWork)
     {
         _siteRepo = siteRepo;
         _siteManager = siteManager;

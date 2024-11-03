@@ -4,7 +4,13 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DNQ.DataFeed.Domain.Sites;
 
-public class SiteManager 
+public interface ISiteManager
+{
+    Task<Site> CreateAsync([Required] string code, [Required] string name);
+    Task UpdateAsync(Site updateSite, [Required] string code, [Required] string name);
+}
+
+public class SiteManager : ISiteManager
 {
     private readonly ISiteRepo _siteRepo;
     public SiteManager(ISiteRepo siteRepo) 

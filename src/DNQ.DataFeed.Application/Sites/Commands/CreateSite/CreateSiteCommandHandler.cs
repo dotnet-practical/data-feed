@@ -8,8 +8,8 @@ public class CreateSiteCommandHandler : IRequestHandler<CreateSiteCommand, Guid>
 {
     private readonly ISiteRepo _siteRepo;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly SiteManager _siteManager;
-    public CreateSiteCommandHandler(ISiteRepo siteRepo, SiteManager siteManager, IUnitOfWork unitOfWork)
+    private readonly ISiteManager _siteManager;
+    public CreateSiteCommandHandler(ISiteRepo siteRepo, ISiteManager siteManager, IUnitOfWork unitOfWork)
     {
         _siteRepo = siteRepo;
         _siteManager = siteManager;

@@ -1,8 +1,6 @@
 ﻿using DNQ.DataFeed.Application.Sites.Queries.Dtos;
 using DNQ.DataFeed.Domain.Common.Interfaces;
-using DNQ.DataFeed.Domain.Sites;
 using MediatR;
-using System.Linq.Expressions;
 
 namespace DNQ.DataFeed.Application.Sites.Queries.ListSitesPaging;
 
@@ -18,18 +16,7 @@ public class ListSitesPagingCommandHandler : IRequestHandler<ListSitesPagingComm
     {
         request.AllocateDefaultValueIfRequired();
 
-        Expression<Func<Site, bool>> predicate = PredicateBuilder.True<Site>();
-
-        if (!string.IsNullOrEmpty(request.Code))
-        {
-            predicate = predicate.And(x => x.Code.Contains(request.Code));
-        }
-
-        if (!string.IsNullOrEmpty(request.Name))
-        {
-            predicate = predicate.And(x => x.Name.Contains(request.Name));
-        }
-
+        var predicate = SiteSpecifications.Filter(request.Code, request.Name);
         var sites = await _siteRepo.ListAsync(predicate, request.Sort, request.Page, request.PageSize);
         var siteDtos = sites.Select(x => new SiteDto { Id = x.Id, Name = x.Name, Code = x.Code }).ToList();
         var totals = await _siteRepo.CountAsync(predicate);
