@@ -31,6 +31,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNQ.DataFeed.Domain", "src\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNQ.DataFeed.Persistence", "src\DNQ.DataFeed.Persistence\DNQ.DataFeed.Persistence.csproj", "{B1D29BBC-BE53-48C6-B7FD-442253C25387}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNQ.DataFeed.Application.Tests.Unit", "tests\DNQ.DataFeed.Application.Tests.Unit\DNQ.DataFeed.Application.Tests.Unit.csproj", "{E1FC88CF-E4D7-42BC-965C-13172A3D7D65}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +59,10 @@ Global
 		{B1D29BBC-BE53-48C6-B7FD-442253C25387}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B1D29BBC-BE53-48C6-B7FD-442253C25387}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B1D29BBC-BE53-48C6-B7FD-442253C25387}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1FC88CF-E4D7-42BC-965C-13172A3D7D65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1FC88CF-E4D7-42BC-965C-13172A3D7D65}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1FC88CF-E4D7-42BC-965C-13172A3D7D65}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1FC88CF-E4D7-42BC-965C-13172A3D7D65}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -68,6 +74,7 @@ Global
 		{48EA4AFF-AB9D-4AD3-AC86-752585717721} = {A6F16E89-EDDA-4779-A55D-153515AB7F8B}
 		{C3DCD4F5-9588-4915-9308-A3A5C9D0C775} = {A6F16E89-EDDA-4779-A55D-153515AB7F8B}
 		{B1D29BBC-BE53-48C6-B7FD-442253C25387} = {A6F16E89-EDDA-4779-A55D-153515AB7F8B}
+		{E1FC88CF-E4D7-42BC-965C-13172A3D7D65} = {B75E38B1-91AA-43E0-B7FB-A809A346ACF1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8F1E41DB-BFE1-4372-952B-88D8D21A0357}

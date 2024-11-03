@@ -14,6 +14,23 @@ public static class SiteSpecifications
     {
         return s => s.Name == name;
     }
+
+    public static Expression<Func<Site, bool>> Filter(string? code, string? name)
+    {
+        Expression<Func<Site, bool>> predicate = PredicateBuilder.True<Site>();
+
+        if (!string.IsNullOrEmpty(code))
+        {
+            predicate = predicate.And(x => x.Code.Contains(code));
+        }
+
+        if (!string.IsNullOrEmpty(name))
+        {
+            predicate = predicate.And(x => x.Name.Contains(name));
+        }
+
+        return predicate;
+    }
 }
 
 public static class PredicateBuilder

@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using System.ComponentModel.DataAnnotations;
 
 namespace DNQ.DataFeed.Application.Sites.Commands.CreateSite;
 

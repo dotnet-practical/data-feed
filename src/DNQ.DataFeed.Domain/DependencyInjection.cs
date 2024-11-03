@@ -7,7 +7,7 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddDomain(this IServiceCollection services)
     {
-        services.AddTransient<SiteManager>();
+        services.AddTransient<ISiteManager, SiteManager>();
 
         return services;
     }

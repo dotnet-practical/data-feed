@@ -35,7 +35,7 @@ public class SiteRepo : ISiteRepo
         return await _dbContext.Sites.AnyAsync(predicate);
     }
 
-    public async Task<Site?> FirstOrDefaultAsync(Expression<Func<Site, bool>> predicate)
+    public async Task<Site> FirstOrDefaultAsync(Expression<Func<Site, bool>> predicate)
     {
         return await _dbContext.Sites.FirstOrDefaultAsync(predicate);
     }
