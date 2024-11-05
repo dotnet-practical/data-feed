@@ -1,0 +1,24 @@
+on:
+  workflow_call:
+    inputs:
+      database-connection-string:
+        required: true
+        type: string
+      schema-manager-directory: 
+        required: true 
+        type: string
+jobs:
+  deploy:
+     name: 'Update database'
+     runs-on: ubuntu-latest'
+
+     steps:
+     - name: Install EF Core CLI
+       run: |
+           dotnet tool install dotnet-ef --global
+      
+     - name: Update database
+       run: |
+        cd ${{ inputs.schema-manager-directory }}
+        dotnet ef database update -- --connectionString="${{ inputs.database-connection-string }}"
+

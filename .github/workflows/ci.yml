@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: ["master"]
+    branches: ["master", "DF-*-Deploy-*"]
 
 permissions:
   id-token: write
@@ -29,6 +29,12 @@ jobs:
     - name: 'Publish'
       run: |
         dotnet publish src/DNQ.DataFeed.Api/DNQ.DataFeed.Api.csproj --configuration Release -o artifacts
+
+    - name: 'Update database'
+      uses: ./.github/workflows/db-migration.yml
+      with:
+       database-connection-string: ${{ secrets.AZURE_MYSQL }} 
+       schema-manager-directory: DNQ.DataFeed.Persistence
 
     - uses: actions/upload-artifact@v4
       with: 

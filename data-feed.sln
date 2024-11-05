@@ -19,6 +19,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{65213077-3754-49C7-A677-A178FA545F9E}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\ci.yml = .github\workflows\ci.yml
+		.github\workflows\db-migration.yml = .github\workflows\db-migration.yml
 		.github\workflows\pr-verify.yml = .github\workflows\pr-verify.yml
 		.github\workflows\step-deploy.yml = .github\workflows\step-deploy.yml
 	EndProjectSection
