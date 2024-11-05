@@ -31,11 +31,11 @@ jobs:
         dotnet publish src/DNQ.DataFeed.Api/DNQ.DataFeed.Api.csproj --configuration Release -o artifacts
 
     - name: 'Install EF Core CLI'
-       run: |
+      run: |
         dotnet tool install dotnet-ef --global
 
     - name: Update database
-       run: |
+      run: |
         cd DNQ.DataFeed.Persistence
         dotnet ef database update -- --connectionString="${{ secrets.AZURE_MYSQL }}"
 
