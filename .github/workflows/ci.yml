@@ -32,7 +32,7 @@ jobs:
 
     - name: 'Install EF Core CLI'
       run: |
-        dotnet tool install dotnet-ef --global
+        dotnet tool install --global dotnet-ef --version 6.0.6
 
     - name: Update database
       run: |
