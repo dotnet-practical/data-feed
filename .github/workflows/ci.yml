@@ -30,11 +30,14 @@ jobs:
       run: |
         dotnet publish src/DNQ.DataFeed.Api/DNQ.DataFeed.Api.csproj --configuration Release -o artifacts
 
-    - name: 'Update database'
-      uses: ./.github/workflows/db-migration.yml
-      with:
-       database-connection-string: ${{ secrets.AZURE_MYSQL }} 
-       schema-manager-directory: DNQ.DataFeed.Persistence
+    - name: 'Install EF Core CLI'
+       run: |
+        dotnet tool install dotnet-ef --global
+
+    - name: Update database
+       run: |
+        cd DNQ.DataFeed.Persistence
+        dotnet ef database update -- --connectionString="${{ secrets.AZURE_MYSQL }}"
 
     - uses: actions/upload-artifact@v4
       with: 
