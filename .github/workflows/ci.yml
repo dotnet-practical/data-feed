@@ -36,7 +36,7 @@ jobs:
 
     - name: Update database
       run: |
-        cd DNQ.DataFeed.Persistence
+        cd src/DNQ.DataFeed.Persistence
         dotnet ef database update -- --connectionString="${{ secrets.AZURE_MYSQL }}"
 
     - uses: actions/upload-artifact@v4
