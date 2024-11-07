@@ -30,23 +30,27 @@ jobs:
       run: |
         dotnet publish src/DNQ.DataFeed.Api/DNQ.DataFeed.Api.csproj --configuration Release -o artifacts
 
-    - name: 'Install EF Core CLI'
-      run: |
-        dotnet tool install --global dotnet-ef --version 6.0.6
-
-    - name: Update database
-      run: |
-        cd src/DNQ.DataFeed.Persistence
-        dotnet ef database update -- --connectionString="${{ secrets.AZURE_MYSQL }}"
-
     - uses: actions/upload-artifact@v4
       with: 
         name: artifact
         path: artifacts/
+
+  db_migration:
+     name: Db migrations
+     needs: build
+     uses: ./.github/workflows/db-migration.yml
+     with:
+       resource_group_name: rg-datafeed-dev-mysql-central-us
+       mysql_service_name: db-datafeed-dev-mysql-central-us
+     secrets: 
+       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID_MYSQL }}
+       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+       AZURE_MYSQL: ${{ secrets.AZURE_MYSQL }}
   
   deploy_dev:
      name: Deploy dev
-     needs: build
+     needs: db_migration
      uses: ./.github/workflows/step-deploy.yml
      with:
        env: dev
