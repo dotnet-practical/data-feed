@@ -45,7 +45,7 @@ jobs:
         
       - name: Add IP to Firewall
         run: | 
-          az mysql server firewall-rule create --resource-group ${{ inputs.resource_group_name }} --server-name ${{ inputs.mysql_service_name }} --name GitHubIP --start-ip-address ${{ steps.ip.outputs.ipv4 }} --end-ip-address ${{ steps.ip.outputs.ipv4 }}
+          az mysql flexible-server firewall-rule create --resource-group ${{ inputs.resource_group_name }} --name ${{ inputs.mysql_service_name }} --rule-name GitHubIP --start-ip-address ${{ steps.ip.outputs.ipv4 }} --end-ip-address ${{ steps.ip.outputs.ipv4 }}
 
       - name: 'Checkout GitHub Action'
         uses: actions/checkout@v4
@@ -66,4 +66,4 @@ jobs:
         
       - name: Remove IP from Firewall
         run: |
-          az sql server firewall-rule delete --resource-group ${{ inputs.resource_group_name }} --server ${{ inputs.mysql_service_name }} --name GitHubIP
+          az mysql flexible-server firewall-rule delete --rule-name GitHubIP --resource-group ${{ inputs.resource_group_name }} --name ${{ inputs.mysql_service_name }}
