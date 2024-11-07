@@ -66,4 +66,4 @@ jobs:
         
       - name: Remove IP from Firewall
         run: |
-          az mysql flexible-server firewall-rule delete --rule-name GitHubIP --resource-group ${{ inputs.resource_group_name }} --name ${{ inputs.mysql_service_name }}
+          az mysql flexible-server firewall-rule delete --rule-name GitHubIP --resource-group ${{ inputs.resource_group_name }} --name ${{ inputs.mysql_service_name }} --yes
