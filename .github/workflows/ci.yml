@@ -42,6 +42,7 @@ jobs:
      with:
        resource_group_name: rg-datafeed-dev-mysql-central-us
        mysql_service_name: db-datafeed-dev-mysql-central-us
+       env: dev
      secrets: 
        AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID_MYSQL }}
        AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}

@@ -1,6 +1,9 @@
 on:
   workflow_call:
     inputs:
+      env:
+        required: true
+        type: string
       resource_group_name: 
         required: true 
         type: string
@@ -21,6 +24,7 @@ jobs:
   deploy:
     name: Db migrations
     runs-on: ubuntu-latest
+    environment: ${{inputs.env}}
 
     steps:
       - name: Get Public IP
@@ -32,7 +36,7 @@ jobs:
           echo "IPv4: ${{ steps.ip.outputs.ipv4 }}"
           echo "IPv6: ${{ steps.ip.outputs.ipv6 }}"
         
-      - name: Login to Azure
+      - name: Azure login
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
