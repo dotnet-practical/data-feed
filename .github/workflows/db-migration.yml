@@ -1,0 +1,69 @@
+on:
+  workflow_call:
+    inputs:
+      env:
+        required: true
+        type: string
+      resource_group_name: 
+        required: true 
+        type: string
+      mysql_service_name: 
+        required: true 
+        type: string
+    secrets:
+      AZURE_CLIENT_ID:
+        required: true
+      AZURE_TENANT_ID:
+        required: true
+      AZURE_SUBSCRIPTION_ID:
+        required: true
+      AZURE_MYSQL:
+        required: true
+
+jobs:
+  deploy:
+    name: Db migrations
+    runs-on: ubuntu-latest
+    environment: ${{inputs.env}}
+
+    steps:
+      - name: Get Public IP
+        id: ip
+        uses: haythem/public-ip@v1.3
+      
+      - name: Print Public IP
+        run: |
+          echo "IPv4: ${{ steps.ip.outputs.ipv4 }}"
+          echo "IPv6: ${{ steps.ip.outputs.ipv6 }}"
+        
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        
+      - name: Add IP to Firewall
+        run: | 
+          az mysql flexible-server firewall-rule create --resource-group ${{ inputs.resource_group_name }} --name ${{ inputs.mysql_service_name }} --rule-name GitHubIP --start-ip-address ${{ steps.ip.outputs.ipv4 }} --end-ip-address ${{ steps.ip.outputs.ipv4 }}
+
+      - name: 'Checkout GitHub Action'
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 6.0
+        
+      - name: 'Install EF Core CLI'
+        run: |
+          dotnet tool install --global dotnet-ef --version 6.0.6
+
+      - name: Update database
+        run: |
+          cd src/DNQ.DataFeed.Persistence
+          dotnet ef database update -- --connectionString="${{ secrets.AZURE_MYSQL }}"
+        
+      - name: Remove IP from Firewall
+        run: |
+          az mysql flexible-server firewall-rule delete --rule-name GitHubIP --resource-group ${{ inputs.resource_group_name }} --name ${{ inputs.mysql_service_name }} --yes

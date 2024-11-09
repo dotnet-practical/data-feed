@@ -51,9 +51,9 @@ Add site table
 			How to 
 				cd ()..)\SBill.Persistence 
 				add migration 
-					dotnet ef migrations add Init -o Migrations -- --environment Development 
+					dotnet ef migrations add Init -o Migrations -- --environment=Development 
 				remove previous migration 
-					dotnet ef migrations remove -o Migrations -- --environment Development 
+					dotnet ef migrations remove -o Migrations -- --environment=Development 
 				update datbase 
 					dotnet ef database update
 					
@@ -120,6 +120,55 @@ Add site api
 		get
 		{
 		}
+
+------------------------------------------------------
+
+	- name: 'Cài đặt dotnet-ef'
+      run: dotnet tool install --global dotnet-ef
+
+    - name: 'Thêm dotnet tools vào PATH'
+      shell: bash
+      run: echo "::add-path::\$HOME/.dotnet/tools"
+
+------------------------------------------------------
+	- name: 'Cập nhật Database'
+      env:
+        ConnectionStrings__DefaultConnection: ${{ secrets.AZURE_MYSQL_CONNECTION_STRING }}
+      run: |
+        dotnet ef database update --project src/DNQ.DataFeed.Api/DNQ.DataFeed.Api.csproj
+		
+	---------------------------------------------------	
+    - name: 'Cập nhật Database'
+      working-directory: src/DNQ.DataFeed.Persistence
+      env:
+        ConnectionStrings__DefaultConnection: ${{ secrets.AZURE_MYSQL_CONNECTION_STRING }}
+      run: |
+        dotnet ef database update
+		
+		
+	AppDbContextFactory.CreateDbContext 
+		
+		lay connection string tu -- --environment Development
+		
+		dotnet ef migrations remove -o Migrations -- --connectionString="Server=127.0.0.1;Database=DataFeed;User=root;Password=root;" --context="ExampleContext"
+		
+		 dotnet ef database update -- --connectionString="Server=127.0.0.1;Database=DataFeed;User=root;Password=root;"
+		 
+		dotnet ef database update -- --connectionString="Server=127.0.0.1;Database=DataFeed;User=root;Password=root;"
+		
+	---------------
+		
+	1. add db-migration.yml 
+	2. get real connection string, pass to secrets ${{ secrets.AZURE_MYSQL }} 
+	
+	- name: Install EF Core CLI
+      run: |
+        dotnet tool install dotnet-ef --global
+      
+    - name: Update database
+      run: |
+        cd ${{ inputs.schema-manager-directory }}
+        dotnet ef database update -- --connectionString="${{ inputs.database-connection-string }}"
 		
 		----
 		list 

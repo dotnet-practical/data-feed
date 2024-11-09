@@ -11,17 +11,31 @@ public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
 {
     public AppDbContext CreateDbContext(string[] args)
     {
-        var enviroment = GetEnvironmentFromArgs(args);
-        var directory = GetDirectory();
-        var configuration = BuildConfiguration(directory, enviroment);
-
-        var connectionString = configuration.GetConnectionString("DefaultConnection");
-        Console.WriteLine($"directory: {directory} - enviroment: {enviroment} - connectionString: {connectionString}");
+        /* Retrieve the connection string from args first, and if it is not available, retrieve it from appsettings.json. */
+        var connectionString = GetConnectionString(args);
+        if (string.IsNullOrEmpty(connectionString))
+        {
+            var enviroment = GetEnvironmentFromArgs(args);
+            var directory = GetDirectory();
+            var configuration = BuildConfiguration(directory, enviroment);
+            connectionString = configuration.GetConnectionString("DefaultConnection");
+        }
 
         var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
         optionsBuilder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
 
         return new AppDbContext(optionsBuilder.Options);
+    }
+
+    private string GetConnectionString(string[] args)
+    {
+        var connectionStringArg = args.FirstOrDefault(arg => arg.StartsWith("--connectionString="));
+        if (connectionStringArg != null)
+        {
+            return connectionStringArg.Replace("--connectionString=", "");
+        }
+
+        return string.Empty;
     }
 
     private string GetEnvironmentFromArgs(string[] args)

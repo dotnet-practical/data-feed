@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: ["master"]
+    branches: ["master", "DF-*-Deploy-*"]
 
 permissions:
   id-token: write
@@ -34,10 +34,24 @@ jobs:
       with: 
         name: artifact
         path: artifacts/
+
+  db_migration:
+     name: Db migrations
+     needs: build
+     uses: ./.github/workflows/db-migration.yml
+     with:
+       resource_group_name: rg-datafeed-dev-mysql-central-us
+       mysql_service_name: db-datafeed-dev-mysql-central-us
+       env: dev
+     secrets: 
+       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID_MYSQL }}
+       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+       AZURE_MYSQL: ${{ secrets.AZURE_MYSQL }}
   
   deploy_dev:
      name: Deploy dev
-     needs: build
+     needs: db_migration
      uses: ./.github/workflows/step-deploy.yml
      with:
        env: dev

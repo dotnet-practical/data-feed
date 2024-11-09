@@ -8,14 +8,14 @@ namespace DNQ.DataFeed.Persistence;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddPersistence(
-            this IServiceCollection services,
-            IConfiguration configuration)
+    public static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration)
     {
+        var connectionString = configuration["ConnectionStrings:DefaultConnection"];
+
         // Add DbContext using Mysql provider
         services.AddDbContext<AppDbContext>(options =>
-           options.UseMySql(configuration.GetConnectionString("DefaultConnection"),
-           ServerVersion.AutoDetect(configuration.GetConnectionString("DefaultConnection"))));
+           options.UseMySql(connectionString,
+           ServerVersion.AutoDetect(connectionString)));
 
         services.AddScoped<ISiteRepo, SiteRepo>();
         services.AddScoped<IUnitOfWork>(serviceProvider => serviceProvider.GetRequiredService<AppDbContext>());
