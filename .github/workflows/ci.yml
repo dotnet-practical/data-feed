@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: ["master", "DF-*-Deploy-*"]
+    branches: ["master", "DF-DB-MIGRATION-*"]
 
 permissions:
   id-token: write
@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   build:
-    name: CI
+    name: build
     runs-on: ubuntu-latest
 
     steps:
