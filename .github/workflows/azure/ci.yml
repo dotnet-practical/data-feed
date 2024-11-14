@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: ["master", "DF-DB-MIGRATION-*", "DF-*CI*"]
+    branches: ["master", "DF-DB-MIGRATION-*"]
 
 permissions:
   id-token: write
@@ -48,8 +48,6 @@ jobs:
        AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
        AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
        AZURE_MYSQL: ${{ secrets.AZURE_MYSQL }}
-       DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-       DIGITALOCEAN_MYSQL: ${{ secrets.DIGITALOCEAN_MYSQL }}
   
   deploy_dev:
      name: Deploy dev

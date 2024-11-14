@@ -19,6 +19,10 @@ on:
         required: true
       AZURE_MYSQL:
         required: true
+      DIGITALOCEAN_ACCESS_TOKEN:
+        required: true
+      DIGITALOCEAN_MYSQL:
+        required: true
 
 jobs:
   deploy:
@@ -36,16 +40,21 @@ jobs:
           echo "IPv4: ${{ steps.ip.outputs.ipv4 }}"
           echo "IPv6: ${{ steps.ip.outputs.ipv6 }}"
         
-      - name: Azure login
-        uses: azure/login@v2
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-        
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+ 
       - name: Add IP to Firewall
-        run: | 
-          az mysql flexible-server firewall-rule create --resource-group ${{ inputs.resource_group_name }} --name ${{ inputs.mysql_service_name }} --rule-name GitHubIP --start-ip-address ${{ steps.ip.outputs.ipv4 }} --end-ip-address ${{ steps.ip.outputs.ipv4 }}
+        run: |
+          DB_ID=$(doctl databases list --format Name,ID --no-header | grep db-datafeed-dev | awk '{print $2}')
+          if [ -z "$DB_ID" ]; then
+            echo "Database 'db-datafeed-dev' not found."
+            exit 1
+          fi
+          doctl databases firewalls append "$DB_ID" --rule ip_addr:${{ steps.ip.outputs.ipv4 }}
+        env:
+          DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
       - name: 'Checkout GitHub Action'
         uses: actions/checkout@v4
@@ -62,8 +71,22 @@ jobs:
       - name: Update database
         run: |
           cd src/DNQ.DataFeed.Persistence
-          dotnet ef database update -- --connectionString="${{ secrets.AZURE_MYSQL }}"
-        
+          dotnet ef database update -- --connectionString="${{ secrets.DIGITALOCEAN_MYSQL }}"
+      
       - name: Remove IP from Firewall
+        if: always()
         run: |
-          az mysql flexible-server firewall-rule delete --rule-name GitHubIP --resource-group ${{ inputs.resource_group_name }} --name ${{ inputs.mysql_service_name }} --yes
+          DB_ID=$(doctl databases list --format Name,ID --no-header | grep db-datafeed-dev | awk '{print $2}')
+          if [ -z "$DB_ID" ]; then
+            echo "Database 'db-datafeed-dev' not found."
+            exit 1
+          fi
+          FIREWALL_RULES=$(doctl databases firewalls list "$DB_ID")
+          RULE_UUID=$(echo "$FIREWALL_RULES" | grep "ip_addr\s*${{ steps.ip.outputs.ipv4 }}" | awk '{print $1}')
+          if [ -n "$RULE_UUID" ]; then
+            doctl databases firewalls remove "$DB_ID" --uuid "$RULE_UUID"
+          else
+            echo "No matching firewall rule found for IP ${{ steps.ip.outputs.ipv4 }}"
+          fi
+        env:
+          DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
