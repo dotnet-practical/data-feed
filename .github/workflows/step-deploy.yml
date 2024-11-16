@@ -71,8 +71,8 @@ jobs:
           exit 1
         fi
 
-        echo "Firewall created successfully with ID: $FIREWALL_ID"
         echo "FIREWALL_ID=$FIREWALL_ID" >> $GITHUB_OUTPUT
+        echo "Firewall created successfully with ID: $FIREWALL_ID"
       env:
         DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
      
@@ -99,6 +99,7 @@ jobs:
     - name: Delete Firewall Rule
       if: always()
       run: |
+        echo "FIREWALL_ID=${{ steps.create_firewall.outputs.FIREWALL_ID }}"
         FIREWALL_ID=${{ steps.create_firewall.outputs.FIREWALL_ID }}
         if [ -n "$FIREWALL_ID" ]; then
           doctl compute firewall delete "$FIREWALL_ID" --force
