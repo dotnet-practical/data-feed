@@ -83,7 +83,7 @@ jobs:
         key: ${{ secrets.DROPLET_KEY }}
         port: ${{ secrets.DROPLET_PORT }}
         source: artifacts/*
-        target: /var/www/test_domain
+        target: /var/www/test_domain/ready_deploy
 
     - name: Deploy
       uses: appleboy/ssh-action@v1.1.0
