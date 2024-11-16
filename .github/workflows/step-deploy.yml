@@ -57,6 +57,7 @@ jobs:
         echo "IPv6: ${{ steps.ip.outputs.ipv6 }}"
 
     - name: Create New Firewall Rule for Droplet
+      id: create_firewall
       run: |
         FIREWALL_NAME="firewall-$(date +%s)"
         FIREWALL_ID=$(doctl compute firewall create \
