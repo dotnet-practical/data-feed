@@ -96,6 +96,7 @@ jobs:
           deploy.sh
      
     - name: Delete Firewall Rule
+      if: always()
       run: |
         doctl compute firewall delete "$FIREWALL_ID" --force
         echo "Firewall deleted successfully."
