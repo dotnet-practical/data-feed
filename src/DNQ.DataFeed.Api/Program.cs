@@ -26,7 +26,7 @@ app.UseSwaggerUI();
 /* Extend ExceptionHandlerMiddleware instead of re-writing */
 app.UseExceptionHandler(err => err.UseCustomErrors(app.Environment));
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 //app.UseAuthorization();
 

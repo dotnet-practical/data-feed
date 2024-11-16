@@ -58,9 +58,9 @@ jobs:
 
     - name: Create New Firewall Rule for Droplet
       run: |
-
+        FIREWALL_NAME="firewall-$(date +%s)"
         FIREWALL_ID=$(doctl compute firewall create \
-          --name firewall-app-datafeed-dev \
+          --name "$FIREWALL_NAME" \
           --inbound-rules "protocol:tcp,ports:22,address:${{ steps.ip.outputs.ipv4 }}" \
           --outbound-rules "protocol:tcp,ports:all,destination_addresses:0.0.0.0/0" \
           --droplet-ids ${{ secrets.DROPLET_ID }} \
