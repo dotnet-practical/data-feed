@@ -1,4 +1,4 @@
-on:
+﻿on:
   workflow_call:
     inputs:
       env:
@@ -17,31 +17,96 @@ on:
         required: true
       AZURE_SUBSCRIPTION_ID:
         required: true
+      DIGITALOCEAN_ACCESS_TOKEN:
+        required: true
+      DROPLET_ID:
+        required: true
+      DROPLET_HOST:
+        required: true
+      DROPLET_USERNAME:
+        required: true
+      DROPLET_KEY:
+        required: true
+      DROPLET_PORT:
+        required: true
+
 jobs:
   deploy:
-     name: Deploy ${{inputs.env}}
-     runs-on: ubuntu-latest
-     environment: ${{inputs.env}}
+    name: Deploy ${{ inputs.env }}
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.env }}
 
-     steps:
-     - uses: actions/download-artifact@v4
-       with: 
-         name: artifact
-         path: artifacts/
+    steps:
+    - uses: actions/download-artifact@v4
+      with: 
+        name: artifact
+        path: artifacts/
 
-     - name: Azure login
-       uses: azure/login@v2
-       with:
-         client-id: ${{ secrets.AZURE_CLIENT_ID }}
-         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    - name: Install doctl
+      uses: digitalocean/action-doctl@v2
+      with:
+        token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+   
+    - name: Get Public IP
+      id: ip
+      uses: haythem/public-ip@v1.3
+      
+    - name: Print Public IP
+      run: |
+        echo "IPv4: ${{ steps.ip.outputs.ipv4 }}"
+        echo "IPv6: ${{ steps.ip.outputs.ipv6 }}"
 
-     - name: Deploy ${{ inputs.env }}
-       uses: azure/webapps-deploy@v2
-       with: 
-        app-name: app-datafeed-dnquangit-${{ inputs.env }} 
-        package: artifacts/    
+    - name: Create New Firewall Rule for Droplet
+      id: create_firewall
+      run: |
+        FIREWALL_NAME="firewall-$(date +%s)"
+        FIREWALL_ID=$(doctl compute firewall create \
+          --name "$FIREWALL_NAME" \
+          --inbound-rules "protocol:tcp,ports:22,address:${{ steps.ip.outputs.ipv4 }}" \
+          --outbound-rules "protocol:tcp,ports:all,destination_addresses:0.0.0.0/0" \
+          --droplet-ids ${{ secrets.DROPLET_ID }} \
+          --format ID --no-header)
+        
+        if [ -z "$FIREWALL_ID" ]; then
+          echo "Failed to create firewall."
+          exit 1
+        fi
 
-     - name: Swap slots 
-       run: |
-         az webapp deployment slot swap -g ${{ inputs.resource_group_name }} -n ${{ inputs.app_service_name }} --slot slot --target-slot production --verbose
+        echo "FIREWALL_ID=$FIREWALL_ID" >> $GITHUB_OUTPUT
+        echo "Firewall created successfully with ID: $FIREWALL_ID"
+      env:
+        DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+     
+    - name: Push artifacts
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: ${{ secrets.DROPLET_HOST }}
+        username: ${{ secrets.DROPLET_USERNAME }}
+        key: ${{ secrets.DROPLET_KEY }}
+        port: ${{ secrets.DROPLET_PORT }}
+        source: artifacts/*
+        target: /var/www/test_domain/ready_deploy
+
+    - name: Deploy
+      uses: appleboy/ssh-action@v1.1.0
+      with:
+        host: ${{ secrets.DROPLET_HOST }}
+        username: ${{ secrets.DROPLET_USERNAME }}
+        key: ${{ secrets.DROPLET_KEY }}
+        port: ${{ secrets.DROPLET_PORT }}
+        script: |
+          deploy.sh
+     
+    - name: Delete Firewall Rule
+      if: always()
+      run: |
+        echo "FIREWALL_ID=${{ steps.create_firewall.outputs.FIREWALL_ID }}"
+        FIREWALL_ID=${{ steps.create_firewall.outputs.FIREWALL_ID }}
+        if [ -n "$FIREWALL_ID" ]; then
+          doctl compute firewall delete "$FIREWALL_ID" --force
+          echo "Firewall deleted successfully."
+        else
+          echo "No FIREWALL_ID to delete."
+        fi
+      env:
+        DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
