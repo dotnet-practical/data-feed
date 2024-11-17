@@ -1,0 +1,61 @@
+name: PR verify
+
+on:
+  pull_request:
+    branches: ["master"]
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  build:
+    name: PR verify
+    runs-on: ubuntu-latest 
+
+    steps:
+    - name: 'Checkout GitHub Action'
+      uses: actions/checkout@v4
+
+    - name: Setup DotNet
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 6.0
+
+    - name: 'Build'
+      run: |
+        dotnet build --configuration Release
+
+    - name: 'Test'
+      run: |
+        dotnet test --configuration Release --no-build --collect:"XPlat Code Coverage"
+      continue-on-error: true
+
+    - name: 'Install ReportGenerator'
+      # .net 6
+      run: dotnet tool install -g dotnet-reportgenerator-globaltool --version 5.3.11
+
+    - name: Generate Coverage Report
+      run: |
+        reportgenerator -reports:**/coverage.cobertura.xml -targetdir:./coverage/reports -reporttypes:Cobertura
+    
+    - name: 'Upload Coverage Report'
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report
+        path: ./coverage/reports
+
+    - name: Code Coverage Summary Report
+      uses: irongut/CodeCoverageSummary@v1.3.0
+      with:
+        filename: './coverage/reports/Cobertura.xml'
+        badge: true
+        format: markdown
+        output: both
+
+    - name: Add Coverage Comment to PR
+      uses: marocchino/sticky-pull-request-comment@v2
+      if: github.event_name == 'pull_request'
+      with:
+        recreate: true
+        path: code-coverage-results.md

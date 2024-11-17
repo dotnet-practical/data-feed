@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: ["master", "DF-DB-MIGRATION-*", "DF-*CI*"]
+    branches: ["master", "DF-*-DB-MIGRATION-*", "DF-*-CI-*"]
 
 permissions:
   id-token: write
@@ -11,80 +11,140 @@ permissions:
 jobs:
   build:
     name: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
+    container:
+      image: mcr.microsoft.com/dotnet/aspnet:6.0-alpine
 
     steps:
-    - name: 'Checkout GitHub Action'
-      uses: actions/checkout@v4
+      - name: 'Checkout code'
+        uses: actions/checkout@v4
 
-    - name: Setup DotNet
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 6.0
+      - name: 'Setup .NET 6'
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 6.0
 
-    - name: 'Build'
-      run: |
-        dotnet build --configuration Release
+      - name: 'Restore dependencies'
+        run: dotnet restore
 
-    - name: 'Publish'
-      run: |
-        dotnet publish src/DNQ.DataFeed.Api/DNQ.DataFeed.Api.csproj --configuration Release -o artifacts
+      - name: 'Build solution'
+        run: dotnet build --configuration Release --no-restore
 
-    - uses: actions/upload-artifact@v4
-      with: 
-        name: artifact
-        path: artifacts/
+      - name: 'Publish application'
+        run: dotnet publish src/DNQ.DataFeed.Api/DNQ.DataFeed.Api.csproj --configuration Release --no-build --output app
+
+      - name: 'Upload build artifacts'
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: artifacts/
+
+  test:
+    name: test
+    runs-on: ubuntu-22.04
+    needs: build
+
+    steps:
+      - name: 'Download build artifacts'
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+
+      - name: 'Setup .NET 6'
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 6.0.x
+
+      - name: 'Run tests with coverage'
+        run: |
+          dotnet test --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage"
+        continue-on-error: false
+
+      - name: 'Install ReportGenerator'
+        run: dotnet tool install -g dotnet-reportgenerator-globaltool
+
+      - name: 'Add .NET Tools to PATH'
+        run: echo "::add-path::${HOME}/.dotnet/tools"
+
+      - name: 'Generate Coverage Report'
+        run: |
+          reportgenerator -reports:**/coverage.cobertura.xml -targetdir:./coverage/reports -reporttypes:Cobertura
+
+      - name: 'Upload Coverage Report'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: ./coverage/reports
+
+      - name: 'Code Coverage Summary Report'
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        with:
+          filename: './coverage/reports/Cobertura.xml'
+          badge: true
+          format: markdown
+          output: both
+
+      - name: 'Add Coverage Comment to PR'
+        uses: marocchino/sticky-pull-request-comment@v2
+        if: github.event_name == 'pull_request'
+        with:
+          recreate: true
+          path: code-coverage-results.md
 
   db_migration:
-     name: Db migrations
-     needs: build
-     uses: ./.github/workflows/db-migration.yml
-     with:
+    if: startsWith(github.ref, 'refs/heads/DF-DB-MIGRATION-')
+    name: Db migrations
+    needs: build
+    uses: ./.github/workflows/db-migration.yml
+    with:
        resource_group_name: rg-datafeed-dev-mysql-central-us
-       mysql_service_name: db-datafeed-dev-mysql-central-us
+       mysql_service_name: db-datafeed-dev
        env: dev
-     secrets: 
-       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID_MYSQL }}
-       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-       AZURE_MYSQL: ${{ secrets.AZURE_MYSQL }}
+    secrets: 
        DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
        DIGITALOCEAN_MYSQL: ${{ secrets.DIGITALOCEAN_MYSQL }}
-  
-  deploy_dev:
-     name: Deploy dev
-     needs: db_migration
-     uses: ./.github/workflows/step-deploy.yml
-     with:
-       env: dev
-       resource_group_name: rg-datafeed-dev
-       app_service_name: app-datafeed-dnquangit-dev
-     secrets: 
-       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-       DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-       DROPLET_ID: ${{ secrets.DROPLET_ID }}
-       DROPLET_HOST: ${{ secrets.DROPLET_HOST }}
-       DROPLET_USERNAME: ${{ secrets.DROPLET_USERNAME }}
-       DROPLET_KEY: ${{ secrets.DROPLET_KEY }}
-       DROPLET_PORT: ${{ secrets.DROPLET_PORT }}
 
-  # deploy_prod:
-  #    name: Deploy prod
-  #    needs: deploy_dev
-  #    uses: ./.github/workflows/step-deploy.yml
-  #    with:
-  #      env: prod 
-  #      resource_group_name: rg-datafeed-pro
-  #      app_service_name: app-datafeed-dnquangit-prod
-  #    secrets: 
-  #      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-  #      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-  #      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-  #      DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-  #      DROPLET_ID: ${{ secrets.DROPLET_ID }}
-  #      DROPLET_HOST: ${{ secrets.DROPLET_HOST }}
-  #      DROPLET_USERNAME: ${{ secrets.DROPLET_USERNAME }}
-  #      DROPLET_KEY: ${{ secrets.DROPLET_KEY }}
-  #      DROPLET_PORT: ${{ secrets.DROPLET_PORT }}
+  build-docker:
+    name: build docker
+    runs-on: ubuntu-22.04
+    needs: [test]
+
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+          path: app/
+      
+      - name: Build image
+        run: docker build -t app-datafeed .
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+      
+      - name: Log in to DigitalOcean Container Registry
+        run: doctl registry login --expiry-seconds 600
+      
+      - name: Set VERSION variable
+        run: echo "VERSION=${GITHUB_SHA::7}" >> $GITHUB_ENV
+        
+      - name: Tag image
+        run: docker tag app-datafeed registry.digitalocean.com/rg-app-datafeed/app-datafeed:${{ env.VERSION }}
+
+      - name: Push image
+        run: docker push registry.digitalocean.com/rg-app-datafeed/app-datafeed:${{ env.VERSION }}
+
+  # deploy:
+  #   name: deploy
+  #   needs: build-docker
+  #   runs-on: ubuntu-22.04
+
+  #   steps:
+  #     - name: 'Deploy to App Platform'
+  #       uses: digitalocean/app_action/deploy@v2
+  #       env:
+  #        SAMPLE_DIGEST: ${{ steps.push.outputs.digest }}
+  #       with:
+  #        token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}

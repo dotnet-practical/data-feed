@@ -1,0 +1,90 @@
+name: CI
+
+on:
+  push:
+    branches: ["master", "DF-DB-MIGRATION-*", "DF-*CI*"]
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 'Checkout GitHub Action'
+      uses: actions/checkout@v4
+
+    - name: Setup DotNet
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 6.0
+
+    - name: 'Build'
+      run: |
+        dotnet build --configuration Release
+
+    - name: 'Publish'
+      run: |
+        dotnet publish src/DNQ.DataFeed.Api/DNQ.DataFeed.Api.csproj --configuration Release -o artifacts
+
+    - uses: actions/upload-artifact@v4
+      with: 
+        name: artifact
+        path: artifacts/
+
+  db_migration:
+     name: Db migrations
+     needs: build
+     uses: ./.github/workflows/db-migration.yml
+     with:
+       resource_group_name: rg-datafeed-dev-mysql-central-us
+       mysql_service_name: db-datafeed-dev-mysql-central-us
+       env: dev
+     secrets: 
+       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID_MYSQL }}
+       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+       AZURE_MYSQL: ${{ secrets.AZURE_MYSQL }}
+       DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+       DIGITALOCEAN_MYSQL: ${{ secrets.DIGITALOCEAN_MYSQL }}
+  
+  deploy_dev:
+     name: Deploy dev
+     needs: db_migration
+     uses: ./.github/workflows/step-deploy.yml
+     with:
+       env: dev
+       resource_group_name: rg-datafeed-dev
+       app_service_name: app-datafeed-dnquangit-dev
+     secrets: 
+       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+       DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+       DROPLET_ID: ${{ secrets.DROPLET_ID }}
+       DROPLET_HOST: ${{ secrets.DROPLET_HOST }}
+       DROPLET_USERNAME: ${{ secrets.DROPLET_USERNAME }}
+       DROPLET_KEY: ${{ secrets.DROPLET_KEY }}
+       DROPLET_PORT: ${{ secrets.DROPLET_PORT }}
+
+  # deploy_prod:
+  #    name: Deploy prod
+  #    needs: deploy_dev
+  #    uses: ./.github/workflows/step-deploy.yml
+  #    with:
+  #      env: prod 
+  #      resource_group_name: rg-datafeed-pro
+  #      app_service_name: app-datafeed-dnquangit-prod
+  #    secrets: 
+  #      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+  #      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+  #      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  #      DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+  #      DROPLET_ID: ${{ secrets.DROPLET_ID }}
+  #      DROPLET_HOST: ${{ secrets.DROPLET_HOST }}
+  #      DROPLET_USERNAME: ${{ secrets.DROPLET_USERNAME }}
+  #      DROPLET_KEY: ${{ secrets.DROPLET_KEY }}
+  #      DROPLET_PORT: ${{ secrets.DROPLET_PORT }}

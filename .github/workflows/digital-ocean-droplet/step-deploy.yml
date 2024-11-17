@@ -33,7 +33,7 @@
 jobs:
   deploy:
     name: Deploy ${{ inputs.env }}
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     environment: ${{ inputs.env }}
 
     steps:

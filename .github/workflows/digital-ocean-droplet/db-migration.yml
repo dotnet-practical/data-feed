@@ -1,0 +1,92 @@
+on:
+  workflow_call:
+    inputs:
+      env:
+        required: true
+        type: string
+      resource_group_name: 
+        required: true 
+        type: string
+      mysql_service_name: 
+        required: true 
+        type: string
+    secrets:
+      AZURE_CLIENT_ID:
+        required: true
+      AZURE_TENANT_ID:
+        required: true
+      AZURE_SUBSCRIPTION_ID:
+        required: true
+      AZURE_MYSQL:
+        required: true
+      DIGITALOCEAN_ACCESS_TOKEN:
+        required: true
+      DIGITALOCEAN_MYSQL:
+        required: true
+
+jobs:
+  deploy:
+    name: Db migrations
+    runs-on: ubuntu-latest
+    environment: ${{inputs.env}}
+
+    steps:
+      - name: Get Public IP
+        id: ip
+        uses: haythem/public-ip@v1.3
+      
+      - name: Print Public IP
+        run: |
+          echo "IPv4: ${{ steps.ip.outputs.ipv4 }}"
+          echo "IPv6: ${{ steps.ip.outputs.ipv6 }}"
+        
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+ 
+      - name: Add IP to Firewall
+        run: |
+          DB_ID=$(doctl databases list --format Name,ID --no-header | grep db-datafeed-dev | awk '{print $2}')
+          if [ -z "$DB_ID" ]; then
+            echo "Database 'db-datafeed-dev' not found."
+            exit 1
+          fi
+          doctl databases firewalls append "$DB_ID" --rule ip_addr:${{ steps.ip.outputs.ipv4 }}
+        env:
+          DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: 'Checkout GitHub Action'
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 6.0
+        
+      - name: 'Install EF Core CLI'
+        run: |
+          dotnet tool install --global dotnet-ef --version 6.0.6
+
+      - name: Update database
+        run: |
+          cd src/DNQ.DataFeed.Persistence
+          dotnet ef database update -- --connectionString="${{ secrets.DIGITALOCEAN_MYSQL }}"
+      
+      - name: Remove IP from Firewall
+        if: always()
+        run: |
+          DB_ID=$(doctl databases list --format Name,ID --no-header | grep db-datafeed-dev | awk '{print $2}')
+          if [ -z "$DB_ID" ]; then
+            echo "Database 'db-datafeed-dev' not found."
+            exit 1
+          fi
+          FIREWALL_RULES=$(doctl databases firewalls list "$DB_ID")
+          RULE_UUID=$(echo "$FIREWALL_RULES" | grep "ip_addr\s*${{ steps.ip.outputs.ipv4 }}" | awk '{print $1}')
+          if [ -n "$RULE_UUID" ]; then
+            doctl databases firewalls remove "$DB_ID" --uuid "$RULE_UUID"
+          else
+            echo "No matching firewall rule found for IP ${{ steps.ip.outputs.ipv4 }}"
+          fi
+        env:
+          DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
