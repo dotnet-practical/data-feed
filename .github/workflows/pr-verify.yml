@@ -32,7 +32,8 @@ jobs:
       continue-on-error: true
 
     - name: 'Install ReportGenerator'
-      run: dotnet tool install -g dotnet-reportgenerator-globaltool
+      # .net 6
+      run: dotnet tool install -g dotnet-reportgenerator-globaltool --version 5.3.11
 
     - name: Generate Coverage Report
       run: |
