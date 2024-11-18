@@ -41,7 +41,6 @@ jobs:
 
           #test
           dotnet test --no-restore --collect:"XPlat Code Coverage"
-          reportgenerator -reports:**/coverage.cobertura.xml -targetdir:./coverage/reports -reporttypes:Cobertura
 
           #build
           dotnet build src/DNQ.DataFeed.Api/DNQ.DataFeed.Api.csproj --no-restore --configuration Release
@@ -52,6 +51,10 @@ jobs:
         with:
           name: artifacts
           path: artifacts/
+
+      - name: Generate test report
+        run: |
+          reportgenerator -reports:**/coverage.cobertura.xml -targetdir:./coverage/reports -reporttypes:Cobertura
 
       - name: 'Upload test report'
         uses: actions/upload-artifact@v4
