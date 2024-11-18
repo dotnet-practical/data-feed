@@ -93,6 +93,8 @@ jobs:
     name: build docker
     runs-on: ubuntu-22.04
     needs: [build]
+    env:
+       ENV: dev
 
     steps:
       - name: Download artifacts
