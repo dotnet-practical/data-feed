@@ -35,12 +35,12 @@ jobs:
           dotnet restore
 
           #test
-          dotnet test --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage"
+          dotnet test --no-restore --collect:"XPlat Code Coverage"
           reportgenerator -reports:**/coverage.cobertura.xml -targetdir:./coverage/reports -reporttypes:Cobertura
 
           #build
-          dotnet build --configuration Release --no-restore
-          dotnet publish src/DNQ.DataFeed.Api/DNQ.DataFeed.Api.csproj --configuration Release -o artifacts
+          dotnet build src/DNQ.DataFeed.Api/DNQ.DataFeed.Api.csproj --no-restore --configuration Release
+          dotnet publish src/DNQ.DataFeed.Api/DNQ.DataFeed.Api.csproj --no-build --configuration Release -o artifacts
 
       - name: 'Upload artifacts'
         uses: actions/upload-artifact@v4
