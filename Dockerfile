@@ -23,7 +23,7 @@ ENV LC_ALL=en_AU.UTF-8
 ENV LANG=en_AU.UTF-8
 
 # Copy the pre-built application files into the Docker image
-COPY ./app .
+COPY . .
 
 # Run the application using your DLL
 CMD ["dotnet", "DNQ.DataFeed.Api.dll"]

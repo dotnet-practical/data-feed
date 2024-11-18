@@ -102,6 +102,7 @@ jobs:
           path: app/
       
       - name: Build image
+        working-directory: ./app
         run: docker build -t app-datafeed .
 
       - name: Install doctl
