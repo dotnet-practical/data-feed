@@ -79,7 +79,7 @@ jobs:
   build-docker:
     name: build docker
     runs-on: ubuntu-22.04
-    needs: [unit-test]
+    needs: [build]
 
     steps:
       - name: Download artifacts
