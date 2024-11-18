@@ -26,12 +26,12 @@ jobs:
         run: dotnet build --configuration Release --no-restore
 
       - name: 'Publish application'
-        run: dotnet publish src/DNQ.DataFeed.Api/DNQ.DataFeed.Api.csproj --configuration Release --no-build --output app
+        run: dotnet publish src/DNQ.DataFeed.Api/DNQ.DataFeed.Api.csproj --configuration Release -o artifacts
 
-      - name: 'Upload build artifacts'
+      - name: 'Upload artifacts'
         uses: actions/upload-artifact@v4
         with:
-          name: build-artifacts
+          name: artifacts
           path: artifacts/
 
   unit-test:
@@ -40,10 +40,11 @@ jobs:
     needs: build
 
     steps:
-      - name: 'Download build artifacts'
+      - name: 'Download artifacts'
         uses: actions/download-artifact@v4
         with:
-          name: build-artifacts
+          name: artifacts
+          path: .
 
       - name: 'Setup .NET 6'
         uses: actions/setup-dotnet@v4
@@ -105,10 +106,10 @@ jobs:
     needs: [unit-test]
 
     steps:
-      - name: Download build artifacts
+      - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
-          name: build-artifacts
+          name: artifacts
           path: app/
       
       - name: Build image
