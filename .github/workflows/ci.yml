@@ -134,6 +134,7 @@ jobs:
           SAMPLE_DIGEST: ${{ steps.push_image.outputs.digest }}
         with:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN}}
+          app_spec_location: "./.github/workflows/app.yml"
 
   # deploy:
   #   name: deploy
