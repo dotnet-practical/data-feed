@@ -121,7 +121,19 @@ jobs:
         run: docker tag app-datafeed registry.digitalocean.com/rg-app-datafeed/app-datafeed:${{ env.VERSION }}
 
       - name: Push image
-        run: docker push registry.digitalocean.com/rg-app-datafeed/app-datafeed:${{ env.VERSION }}
+        id: push_image
+        run: |
+           OUTPUT=$(docker push registry.digitalocean.com/rg-app-datafeed/app-datafeed:${{ env.VERSION }})
+           echo "$OUTPUT"
+           DIGEST=$(echo "$OUTPUT" | grep digest | awk '{print $2}')
+           echo "digest=$DIGEST" >> $GITHUB_OUTPUT
+      
+      - name: Deploy the app
+        uses: digitalocean/app_action/deploy@v2
+        env:
+          SAMPLE_DIGEST: ${{ steps.push_image.outputs.digest }}
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN}}
 
   # deploy:
   #   name: deploy

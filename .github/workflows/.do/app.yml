@@ -1,0 +1,8 @@
+name: app-datafeed-dev
+services:
+  - name: app-datafeed
+    image:
+      registry_type: DOCR
+      registry: registry.digitalocean.com
+      repository: rg-app-datafeed/app-datafeed
+      digest: ${SAMPLE_DIGEST}
