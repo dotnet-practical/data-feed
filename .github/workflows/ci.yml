@@ -19,7 +19,6 @@ jobs:
       - name: 'Install dependencies'
         run: |
           dotnet tool install -g dotnet-reportgenerator-globaltool --version 5.3.11
-          echo "::add-path::${HOME}/.dotnet/tools"
       
       - name: 'Checkout code'
         uses: actions/checkout@v4
