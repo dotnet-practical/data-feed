@@ -26,6 +26,10 @@ jobs:
           #install icu-libs
           apk add --no-cache icu-libs
           dotnet tool install -g dotnet-reportgenerator-globaltool --version 5.3.11
+          echo "${HOME}/.dotnet/tools" >> $GITHUB_PATH
+
+      - name: 'Verify ReportGenerator is available'
+        run: reportgenerator --version
       
       - name: 'Checkout code'
         uses: actions/checkout@v4
