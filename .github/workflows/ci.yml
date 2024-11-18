@@ -15,18 +15,26 @@ jobs:
     container:
       image: mcr.microsoft.com/dotnet/sdk:6.0.419-alpine3.19
 
-    steps:
+    steps:      
+      - name: 'Install dependencies'
+        run: |
+          dotnet tool install -g dotnet-reportgenerator-globaltool --version 5.3.11
+          echo "::add-path::${HOME}/.dotnet/tools"
+      
       - name: 'Checkout code'
         uses: actions/checkout@v4
 
-      - name: 'Restore dependencies'
-        run: dotnet restore
+      - name: 'Build'
+        run: |
+          dotnet restore
 
-      - name: 'Build solution'
-        run: dotnet build --configuration Release --no-restore
+          #test
+          dotnet test --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage"
+          reportgenerator -reports:**/coverage.cobertura.xml -targetdir:./coverage/reports -reporttypes:Cobertura
 
-      - name: 'Publish application'
-        run: dotnet publish src/DNQ.DataFeed.Api/DNQ.DataFeed.Api.csproj --configuration Release -o artifacts
+          #build
+          dotnet build --configuration Release --no-restore
+          dotnet publish src/DNQ.DataFeed.Api/DNQ.DataFeed.Api.csproj --configuration Release -o artifacts
 
       - name: 'Upload artifacts'
         uses: actions/upload-artifact@v4
@@ -34,45 +42,13 @@ jobs:
           name: artifacts
           path: artifacts/
 
-  unit-test:
-    name: unit test
-    runs-on: ubuntu-22.04
-    needs: build
-
-    steps:
-      - name: 'Download artifacts'
-        uses: actions/download-artifact@v4
-        with:
-          name: artifacts
-          path: .
-
-      - name: 'Setup .NET 6'
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 6.0.x
-
-      - name: 'Run tests with coverage'
-        run: |
-          dotnet test --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage"
-        continue-on-error: false
-
-      - name: 'Install ReportGenerator'
-        run: dotnet tool install -g dotnet-reportgenerator-globaltool
-
-      - name: 'Add .NET Tools to PATH'
-        run: echo "::add-path::${HOME}/.dotnet/tools"
-
-      - name: 'Generate Coverage Report'
-        run: |
-          reportgenerator -reports:**/coverage.cobertura.xml -targetdir:./coverage/reports -reporttypes:Cobertura
-
-      - name: 'Upload Coverage Report'
+      - name: 'Upload test report'
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
           path: ./coverage/reports
 
-      - name: 'Code Coverage Summary Report'
+      - name: 'Summary report'
         uses: irongut/CodeCoverageSummary@v1.3.0
         with:
           filename: './coverage/reports/Cobertura.xml'
@@ -80,7 +56,7 @@ jobs:
           format: markdown
           output: both
 
-      - name: 'Add Coverage Comment to PR'
+      - name: 'Add report to PR'
         uses: marocchino/sticky-pull-request-comment@v2
         if: github.event_name == 'pull_request'
         with:
