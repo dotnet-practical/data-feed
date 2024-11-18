@@ -15,9 +15,16 @@ jobs:
     container:
       image: mcr.microsoft.com/dotnet/sdk:6.0.419-alpine3.19
 
+    env:
+      DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: "false"
+      LC_ALL: en_AU.UTF-8
+      LANG: en_AU.UTF-8
+
     steps:      
       - name: 'Install dependencies'
         run: |
+          #install icu-libs
+          apk add --no-cache icu-libs
           dotnet tool install -g dotnet-reportgenerator-globaltool --version 5.3.11
       
       - name: 'Checkout code'
