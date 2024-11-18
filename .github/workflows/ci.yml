@@ -27,11 +27,6 @@ jobs:
           apk add --no-cache icu-libs
           dotnet tool install -g dotnet-reportgenerator-globaltool --version 5.3.11
       
-      - name: 'Add .NET Tools to PATH'
-        run: | 
-          echo "::add-path::${HOME}/.dotnet/tools"
-          dotnet tool list -g
-      
       - name: 'Checkout code'
         uses: actions/checkout@v4
 
