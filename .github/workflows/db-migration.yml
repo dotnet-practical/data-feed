@@ -11,14 +11,6 @@ on:
         required: true 
         type: string
     secrets:
-      AZURE_CLIENT_ID:
-        required: true
-      AZURE_TENANT_ID:
-        required: true
-      AZURE_SUBSCRIPTION_ID:
-        required: true
-      AZURE_MYSQL:
-        required: true
       DIGITALOCEAN_ACCESS_TOKEN:
         required: true
       DIGITALOCEAN_MYSQL:
