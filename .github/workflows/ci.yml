@@ -94,6 +94,8 @@ jobs:
     runs-on: ubuntu-22.04
     needs: [build]
     environment: dev
+    outputs:
+      digest: ${{ steps.push_image.outputs.digest }}
 
     steps:
       - name: Download artifacts
@@ -123,28 +125,30 @@ jobs:
       - name: Push image
         id: push_image
         run: |
+           # docker push registry.digitalocean.com/rg-app-datafeed/app-datafeed:${{ env.VERSION }}
            OUTPUT=$(docker push registry.digitalocean.com/rg-app-datafeed/app-datafeed:${{ env.VERSION }})
            echo "$OUTPUT"
            DIGEST=$(echo "$OUTPUT" | grep digest | awk '{print $2}')
            echo "digest=$DIGEST" >> $GITHUB_OUTPUT
-      
-      - name: Deploy the app
+
+  deploy:
+    name: deploy
+    needs: build-docker
+    runs-on: ubuntu-22.04
+    environment: dev
+
+    steps:
+      - name: 'Checkout code'
+        uses: actions/checkout@v4
+
+      - name: 'Digest'
+        run: |
+          echo "Digest is '${{ needs.build-docker.outputs.digest }}'"
+
+      - name: 'Deploy to App Platform'
         uses: digitalocean/app_action/deploy@v2
         env:
-          SAMPLE_DIGEST: ${{ steps.push_image.outputs.digest }}
+         SAMPLE_DIGEST: ${{ needs.build-docker.outputs.digest }}
         with:
-          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN}}
-          app_spec_location: ".github/workflows/app.yml"
-
-  # deploy:
-  #   name: deploy
-  #   needs: build-docker
-  #   runs-on: ubuntu-22.04
-
-  #   steps:
-  #     - name: 'Deploy to App Platform'
-  #       uses: digitalocean/app_action/deploy@v2
-  #       env:
-  #        SAMPLE_DIGEST: ${{ steps.push.outputs.digest }}
-  #       with:
-  #        token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+         token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+         app_spec_location: ".github/workflows/do/app.yml"
