@@ -1,13 +1,9 @@
-name: app-datafeed-dev
-region: sgp
-
 alerts:
   - rule: DEPLOYMENT_FAILED
   - rule: DOMAIN_FAILED
 
 features:
-  - name: buildpack_stack
-    value: ubuntu-22
+- buildpack-stack=ubuntu-22
 
 ingress:
   rules:
@@ -16,6 +12,9 @@ ingress:
           prefix: /
       component:
         name: app-datafeed-dev
+
+name: app-datafeed-dev
+region: sgp
 
 services:
   - name: app-datafeed-dev
