@@ -117,12 +117,12 @@ jobs:
         run: doctl registry login --expiry-seconds 600
         
       - name: Tag image
-        run: docker tag app-datafeed registry.digitalocean.com/rg-app-datafeed/app-datafeed:${{ github.sha.substring(0, 7) }}
+        run: docker tag app-datafeed registry.digitalocean.com/rg-app-datafeed/app-datafeed:${{ github.sha[0:7] }}
 
       - name: Push image
         id: push_image
         run: |
-          docker push registry.digitalocean.com/rg-app-datafeed/app-datafeed:${{ github.sha.substring(0, 7) }}
+          docker push registry.digitalocean.com/rg-app-datafeed/app-datafeed:${{ github.sha[0:7] }}
 
   deploy:
     name: deploy
@@ -137,7 +137,7 @@ jobs:
       - name: 'Deploy to App Platform'
         uses: digitalocean/app_action/deploy@v2
         env:
-         TAG: ${{ github.sha.substring(0, 7) }}
+         TAG: ${{ github.sha[0:7] }}
         with:
          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
          app_spec_location: ".github/workflows/.do/app.yml"
