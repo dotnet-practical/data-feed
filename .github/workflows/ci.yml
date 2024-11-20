@@ -115,14 +115,17 @@ jobs:
       
       - name: Log in to DigitalOcean Container Registry
         run: doctl registry login --expiry-seconds 600
+
+      - name: Set COMMIT_ID variable
+        run: echo "COMMIT_ID=${GITHUB_SHA::7}" >> $GITHUB_ENV
         
       - name: Tag image
-        run: docker tag app-datafeed registry.digitalocean.com/rg-app-datafeed/app-datafeed:${{ github.sha[0:7] }}
+        run: docker tag app-datafeed registry.digitalocean.com/rg-app-datafeed/app-datafeed:${{ COMMIT_ID }}
 
       - name: Push image
         id: push_image
         run: |
-          docker push registry.digitalocean.com/rg-app-datafeed/app-datafeed:${{ github.sha[0:7] }}
+          docker push registry.digitalocean.com/rg-app-datafeed/app-datafeed:${{ COMMIT_ID }}
 
   deploy:
     name: deploy
@@ -133,11 +136,14 @@ jobs:
     steps:
       - name: 'Checkout code'
         uses: actions/checkout@v4
+      
+      - name: Set COMMIT_ID variable
+        run: echo "COMMIT_ID=${GITHUB_SHA::7}" >> $GITHUB_ENV
 
       - name: 'Deploy to App Platform'
         uses: digitalocean/app_action/deploy@v2
         env:
-         TAG: ${{ github.sha[0:7] }}
+         TAG: ${{ COMMIT_ID }}
         with:
          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
          app_spec_location: ".github/workflows/.do/app.yml"
