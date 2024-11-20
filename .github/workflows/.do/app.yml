@@ -5,4 +5,4 @@ services:
       registry_type: DOCR
       registry: registry.digitalocean.com
       repository: rg-app-datafeed/app-datafeed
-      digest: ${SAMPLE_DIGEST}
+      tag: ${TAG}

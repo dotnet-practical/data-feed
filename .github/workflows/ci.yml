@@ -115,21 +115,14 @@ jobs:
       
       - name: Log in to DigitalOcean Container Registry
         run: doctl registry login --expiry-seconds 600
-      
-      - name: Set VERSION variable
-        run: echo "VERSION=${GITHUB_SHA::7}" >> $GITHUB_ENV
         
       - name: Tag image
-        run: docker tag app-datafeed registry.digitalocean.com/rg-app-datafeed/app-datafeed:${{ env.VERSION }}
+        run: docker tag app-datafeed registry.digitalocean.com/rg-app-datafeed/app-datafeed:${{ GITHUB_SHA::7 }}
 
       - name: Push image
         id: push_image
         run: |
-           # docker push registry.digitalocean.com/rg-app-datafeed/app-datafeed:${{ env.VERSION }}
-           OUTPUT=$(docker push registry.digitalocean.com/rg-app-datafeed/app-datafeed:${{ env.VERSION }})
-           echo "$OUTPUT"
-           DIGEST=$(echo "$OUTPUT" | grep digest | awk '{print $2}')
-           echo "digest=$DIGEST" >> $GITHUB_OUTPUT
+          docker push registry.digitalocean.com/rg-app-datafeed/app-datafeed:${{ GITHUB_SHA::7 }}
 
   deploy:
     name: deploy
@@ -141,14 +134,10 @@ jobs:
       - name: 'Checkout code'
         uses: actions/checkout@v4
 
-      - name: 'Digest'
-        run: |
-          echo "Digest is '${{ needs.build-docker.outputs.digest }}'"
-
       - name: 'Deploy to App Platform'
         uses: digitalocean/app_action/deploy@v2
         env:
-         SAMPLE_DIGEST: ${{ needs.build-docker.outputs.digest }}
+         TAG: ${{ GITHUB_SHA::7 }}
         with:
          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-         app_spec_location: ".github/workflows/do/app.yml"
+         app_spec_location: ".github/workflows/.do/app.yml"
