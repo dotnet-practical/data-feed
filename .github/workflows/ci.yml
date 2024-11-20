@@ -120,12 +120,12 @@ jobs:
         run: echo "COMMIT_ID=${GITHUB_SHA::7}" >> $GITHUB_ENV
         
       - name: Tag image
-        run: docker tag app-datafeed registry.digitalocean.com/rg-app-datafeed/app-datafeed:${{ COMMIT_ID }}
+        run: docker tag app-datafeed registry.digitalocean.com/rg-app-datafeed/app-datafeed:${{ env.COMMIT_ID }}
 
       - name: Push image
         id: push_image
         run: |
-          docker push registry.digitalocean.com/rg-app-datafeed/app-datafeed:${{ COMMIT_ID }}
+          docker push registry.digitalocean.com/rg-app-datafeed/app-datafeed:${{ env.COMMIT_ID }}
 
   deploy:
     name: deploy
@@ -143,7 +143,7 @@ jobs:
       - name: 'Deploy to App Platform'
         uses: digitalocean/app_action/deploy@v2
         env:
-         TAG: ${{ COMMIT_ID }}
+         TAG: ${{ env.COMMIT_ID }}
         with:
          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
          app_spec_location: ".github/workflows/.do/app.yml"
