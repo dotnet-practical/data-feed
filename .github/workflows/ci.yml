@@ -147,3 +147,5 @@ jobs:
         with:
          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
          app_spec_location: ".github/workflows/.do/app.yml"
+         print_build_logs: true
+         print_deploy_logs: true

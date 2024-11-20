@@ -3,6 +3,5 @@ services:
   - name: app-datafeed
     image:
       registry_type: DOCR
-      registry: registry.digitalocean.com
-      repository: rg-app-datafeed/app-datafeed
+      repository: app-datafeed
       tag: ${TAG}
