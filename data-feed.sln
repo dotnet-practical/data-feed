@@ -11,6 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNQ.DataFeed.Api", "src\DNQ
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FB6CFEDF-402E-4A10-AFBD-5C2F7F9BE0B5}"
 	ProjectSection(SolutionItems) = preProject
+		Dockerfile = Dockerfile
 		global.json = global.json
 	EndProjectSection
 EndProject
@@ -32,7 +33,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNQ.DataFeed.Domain", "src\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNQ.DataFeed.Persistence", "src\DNQ.DataFeed.Persistence\DNQ.DataFeed.Persistence.csproj", "{B1D29BBC-BE53-48C6-B7FD-442253C25387}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNQ.DataFeed.Application.Tests.Unit", "tests\DNQ.DataFeed.Application.Tests.Unit\DNQ.DataFeed.Application.Tests.Unit.csproj", "{E1FC88CF-E4D7-42BC-965C-13172A3D7D65}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNQ.DataFeed.Application.Tests.Unit", "tests\DNQ.DataFeed.Application.Tests.Unit\DNQ.DataFeed.Application.Tests.Unit.csproj", "{E1FC88CF-E4D7-42BC-965C-13172A3D7D65}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
