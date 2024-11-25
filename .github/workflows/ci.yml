@@ -77,7 +77,7 @@ jobs:
           path: code-coverage-results.md
 
   db-migration:
-    if: startsWith(github.ref, 'refs/heads/DF-DB-MIGRATION-')
+    if: contains(github.ref, 'DB-MIGRATION')
     name: db migration
     needs: build
     uses: ./.github/workflows/db-migration.yml
