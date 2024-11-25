@@ -18,6 +18,7 @@ public static class DependencyInjection
            ServerVersion.AutoDetect(connectionString)));
 
         services.AddScoped<ISiteRepo, SiteRepo>();
+        services.AddScoped<IAccountRepo, AccountRepo>();
         services.AddScoped<IUnitOfWork>(serviceProvider => serviceProvider.GetRequiredService<AppDbContext>());
 
         return services;

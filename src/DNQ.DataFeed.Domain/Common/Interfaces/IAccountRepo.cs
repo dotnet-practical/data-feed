@@ -10,6 +10,11 @@ public static class AccountSpecifications
     {
         return s => s.SiteId == siteId && s.PlatformId == platformId && s.InternalId == internalId && s.ReferenceValue == referenceValue;
     }
+
+    public static Expression<Func<Account, bool>> HasInternalId(Guid internalId)
+    {
+        return s => s.InternalId == internalId;
+    }
 }
 public interface IAccountRepo
 {

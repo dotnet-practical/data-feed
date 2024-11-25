@@ -16,7 +16,7 @@ public class AccountConfig : IEntityTypeConfiguration<Account>
         builder.Property(s => s.ReferenceValue).IsRequired();
         builder.Property(s => s.SiteId).IsRequired();
         builder.Property(s => s.StartDate).IsRequired();
-        builder.Property(s => s.EndDate);
+        builder.Property(s => s.EndDate).IsRequired(false);
         builder.Property(s => s.FinYear).IsRequired();
     }
 }

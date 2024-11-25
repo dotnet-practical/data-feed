@@ -35,7 +35,7 @@ public class SiteRepo : ISiteRepo
         return await _dbContext.Sites.AnyAsync(predicate);
     }
 
-    public async Task<Site> FirstOrDefaultAsync(Expression<Func<Site, bool>> predicate)
+    public async Task<Site?> FirstOrDefaultAsync(Expression<Func<Site, bool>> predicate)
     {
         return await _dbContext.Sites.FirstOrDefaultAsync(predicate);
     }
@@ -55,13 +55,15 @@ public class SiteRepo : ISiteRepo
         return sites;
     }
 
-    public async Task RemoveSite(Site site)
+    public Task RemoveSite(Site site)
     {
          _dbContext.Sites.Remove(site);
+        return Task.CompletedTask;
     }
 
-    public async Task UpdateSite(Site site)
+    public Task UpdateSite(Site site)
     {
         _dbContext.Sites.Update(site);
+        return Task.CompletedTask;
     }
 }

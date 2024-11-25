@@ -6,12 +6,12 @@ public class Account
 {
     public Guid Id { get; private set; }
     public Guid PlatformId { get; init; } /* Has the rule */
-    public Guid InternalId { get; private set; }
+    public Guid InternalId { get; private set; } /* Has the rule */
     public string ReferenceValue { get; init; } = default!; /* Has the rule */
     public Guid SiteId { get; init; }  /* Has the rule */
     public DateTime StartDate { get; private set; } /* Has the rule */
     public DateTime? EndDate { get; private set; } /* Has the rule */
-    public uint FinYear { get; init; }
+    public uint FinYear { get; private set; } /* Has the rule */
 
     internal Account(Guid platformId, Guid siteId, Guid internalId, string referenceValue, DateTime startDate, DateTime? endDate, uint finYear)
     {
@@ -22,7 +22,7 @@ public class Account
         ReferenceValue = referenceValue;
         SetStartDate(startDate);
         if (endDate != null) SetEndDate(endDate.Value);
-        FinYear = finYear;
+        SetFinYear(finYear);
     }
 
     public void SetStartDate(DateTime startDate)
@@ -35,5 +35,11 @@ public class Account
     {
         if (StartDate >= EndDate) throw new BussinessException("StartDate cannot be greater than EndDate.");
         EndDate = endDate;
+    }
+
+    public void SetFinYear(uint finYear)
+    {
+        if (finYear == 0) throw new BussinessException("FinYear cannot be zero.");
+        FinYear = finYear;
     }
 }

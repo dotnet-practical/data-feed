@@ -3,6 +3,7 @@ using DNQ.DataFeed.Api.Startup;
 using DNQ.DataFeed.Application;
 using DNQ.DataFeed.Domain;
 using DNQ.DataFeed.Persistence;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.ConfigAppSettings();
@@ -12,7 +13,11 @@ builder.Services.AddPersistence(builder.Configuration);
 builder.Services.AddApplication();
 builder.Services.AddDomain();
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+     .AddJsonOptions(options =>
+     {
+         options.JsonSerializerOptions.PropertyNamingPolicy = new SnakeCaseNamingPolicy();
+     });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
