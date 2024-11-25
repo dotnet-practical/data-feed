@@ -1,4 +1,5 @@
-﻿using DNQ.DataFeed.Domain.Common.Interfaces;
+﻿using DNQ.DataFeed.Domain.Accounts;
+using DNQ.DataFeed.Domain.Common.Interfaces;
 using DNQ.DataFeed.Domain.Sites;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +11,7 @@ public class AppDbContext : DbContext, IUnitOfWork
     {
     }
     public DbSet<Site> Sites { get; set; } = null!;
+    public DbSet<Account> Accounts { get; set; } = null!;
 
     public async Task CommitChangesAsync()
     {

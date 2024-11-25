@@ -25,5 +25,20 @@ public static class ApiEndPoint
 
             public const string ListWithPagingNext = $"{Base}/paging-next";
         }
+
+        public static class Accounts
+        {
+            private const string Base = $"{VersionBase}/accounts";
+
+            public const string Create = Base;
+
+            public const string Update = $"{Base}/{{id}}";
+
+            public const string Delete = $"{Base}/{{id}}";
+
+            public const string Get = $"{Base}/{{id}}";
+
+            public const string List = $"{Base}";
+        }
     }
 }
