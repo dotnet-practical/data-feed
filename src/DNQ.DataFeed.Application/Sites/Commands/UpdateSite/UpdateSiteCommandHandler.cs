@@ -19,7 +19,7 @@ public class UpdateSiteCommandHandler : IRequestHandler<UpdateSiteCommand>
     }
     public async Task Handle(UpdateSiteCommand request, CancellationToken cancellationToken)
     {
-        Site updateSite = await _siteRepo.FirstOrDefaultAsync(x => x.Id == request.Id);
+        var updateSite = await _siteRepo.FirstOrDefaultAsync(x => x.Id == request.Id);
 
         if (updateSite == null)
         {
@@ -30,6 +30,6 @@ public class UpdateSiteCommandHandler : IRequestHandler<UpdateSiteCommand>
 
         /* repo stores domain object */
         await _siteRepo.UpdateSite(updateSite);
-        await _unitOfWork.CommitChangesAsync();
+        await _unitOfWork.CommitChangesAsync(cancellationToken);
     }
 }

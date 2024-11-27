@@ -1,7 +1,8 @@
 ﻿using DNQ.DataFeed.Application.Accounts.Commands.CreateAccount;
+using DNQ.DataFeed.Application.Accounts.Commands.DeleteAccount;
+using DNQ.DataFeed.Application.Accounts.Commands.UpdateAccount;
 using DNQ.DataFeed.Application.Accounts.Queries.GetAccount;
-using DNQ.DataFeed.Application.Sites.Commands.CreateSite;
-using DNQ.DataFeed.Application.Sites.Queries.GetSite;
+using DNQ.DataFeed.Application.Accounts.Queries.ListAccounts;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -31,5 +32,30 @@ public class AccountController: ControllerBase
         var dto = await _mediator.Send(new GetAccountCommand(id));
 
         return Ok(dto);
+    }
+
+    [HttpGet(ApiEndPoint.V1.Accounts.List)]
+    public async Task<IActionResult> List([FromQuery] ListAccountsCommand request, CancellationToken cancellationToken)
+    {
+        var dto = await _mediator.Send(request);
+
+        return Ok(dto);
+    }
+
+    [HttpPost(ApiEndPoint.V1.Accounts.Update)]
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateAccountCommand request, CancellationToken cancellationToken)
+    {
+        request.Id = id;
+        await _mediator.Send(request);
+
+        return Ok();
+    }
+
+    [HttpDelete(ApiEndPoint.V1.Accounts.Delete)]
+    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
+    {
+        await _mediator.Send(new DeleteAccountCommand(id));
+
+        return Ok();
     }
 }

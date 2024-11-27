@@ -22,7 +22,7 @@ public class CreateSiteCommandHandler : IRequestHandler<CreateSiteCommand, Guid>
 
         /* repo stores domain object */
         await _siteRepo.AddSite(site);
-        await _unitOfWork.CommitChangesAsync();
+        await _unitOfWork.CommitChangesAsync(cancellationToken);
 
 
         return site.Id;

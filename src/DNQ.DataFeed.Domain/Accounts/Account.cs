@@ -5,10 +5,10 @@ namespace DNQ.DataFeed.Domain.Accounts;
 public class Account
 {
     public Guid Id { get; private set; }
-    public Guid PlatformId { get; init; } /* Has the rule */
+    public Guid PlatformId { get; private set; } /* Has the rule */
     public Guid InternalId { get; private set; } /* Has the rule */
-    public string ReferenceValue { get; init; } = default!; /* Has the rule */
-    public Guid SiteId { get; init; }  /* Has the rule */
+    public string ReferenceValue { get; private set; } = default!; /* Has the rule */
+    public Guid SiteId { get; private set; }  /* Has the rule */
     public DateTime StartDate { get; private set; } /* Has the rule */
     public DateTime? EndDate { get; private set; } /* Has the rule */
     public uint FinYear { get; private set; } /* Has the rule */
@@ -20,20 +20,25 @@ public class Account
         SiteId = siteId;
         InternalId = internalId;
         ReferenceValue = referenceValue;
-        SetStartDate(startDate);
-        if (endDate != null) SetEndDate(endDate.Value);
         SetFinYear(finYear);
+        SetStartDateEndDate(startDate, endDate);
+    }
+    internal void Update(Guid platformId, Guid siteId, Guid internalId, string referenceValue, DateTime startDate, DateTime? endDate, uint finYear)
+    {
+        PlatformId = platformId;
+        SiteId = siteId;
+        InternalId = internalId;
+        ReferenceValue = referenceValue;
+        SetFinYear(finYear);
+        SetStartDateEndDate(startDate, endDate);
     }
 
-    public void SetStartDate(DateTime startDate)
+    public void SetStartDateEndDate(DateTime startDate, DateTime? endDate)
     {
-        if (EndDate != null && StartDate >= EndDate) throw new BussinessException("StartDate cannot be greater than EndDate.");
+        if (endDate.HasValue && startDate > endDate.Value)
+            throw new BussinessException("StartDate cannot be greater than or equal to EndDate.");
+        
         StartDate = startDate;
-    }
-
-    public void SetEndDate(DateTime endDate)
-    {
-        if (StartDate >= EndDate) throw new BussinessException("StartDate cannot be greater than EndDate.");
         EndDate = endDate;
     }
 

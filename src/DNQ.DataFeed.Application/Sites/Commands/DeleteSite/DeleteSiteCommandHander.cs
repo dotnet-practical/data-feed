@@ -24,6 +24,6 @@ public class DeleteSiteCommandHandler : IRequestHandler<DeleteSiteCommand>
         }
 
         await _siteRepo.RemoveSite(deleteSite);
-        await _unitOfWork.CommitChangesAsync();
+        await _unitOfWork.CommitChangesAsync(cancellationToken);
     }
 }

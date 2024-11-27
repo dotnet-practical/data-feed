@@ -22,7 +22,7 @@ public class CreateAccountCommandHandler : IRequestHandler<CreateAccountCommand,
 
         // save domain object
         await _accountRepo.AddAccount(account);
-        await _unitOfWork.CommitChangesAsync();
+        await _unitOfWork.CommitChangesAsync(cancellationToken);
 
         return account.Id;
     }
