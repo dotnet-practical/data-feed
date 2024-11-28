@@ -5,9 +5,9 @@ namespace DNQ.DataFeed.Domain.Common.Interfaces;
 
 public static class AccountSpecifications
 {
-    public static Expression<Func<Account, bool>> HasReferenceValue(Guid siteId, Guid platformId, Guid internalId, string referenceValue)
+    public static Expression<Func<Account, bool>> HasReferenceValue(Guid siteId, Guid platformId, string referenceValue)
     {
-        return s => s.SiteId == siteId && s.PlatformId == platformId && s.InternalId == internalId && s.ReferenceValue == referenceValue;
+        return s => s.SiteId == siteId && s.PlatformId == platformId && s.ReferenceValue == referenceValue;
     }
 
     public static Expression<Func<Account, bool>> HasInternalId(Guid internalId)

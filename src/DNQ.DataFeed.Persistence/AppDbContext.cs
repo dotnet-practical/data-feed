@@ -1,6 +1,7 @@
 ﻿using DNQ.DataFeed.Domain.Accounts;
 using DNQ.DataFeed.Domain.Common.Interfaces;
 using DNQ.DataFeed.Domain.Sites;
+using DNQ.DataFeed.Domain.Transactions;
 using Microsoft.EntityFrameworkCore;
 
 namespace DNQ.DataFeed.Persistence;
@@ -12,6 +13,7 @@ public class AppDbContext : DbContext, IUnitOfWork
     }
     public DbSet<Site> Sites { get; set; } = null!;
     public DbSet<Account> Accounts { get; set; } = null!;
+    public DbSet<Transaction> Transactions { get; set; } = null!;
 
     public async Task CommitChangesAsync(CancellationToken cancellationToken)
     {
