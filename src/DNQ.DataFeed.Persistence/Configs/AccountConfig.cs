@@ -13,7 +13,7 @@ public class AccountConfig : IEntityTypeConfiguration<Account>
 
         builder.Property(s => s.PlatformId).IsRequired();
         builder.Property(s => s.InternalId).IsRequired();
-        builder.Property(s => s.ReferenceValue).IsRequired();
+        builder.Property(s => s.ReferenceValue).IsRequired().HasMaxLength(100);
         builder.Property(s => s.SiteId).IsRequired();
         builder.Property(s => s.StartDate).IsRequired();
         builder.Property(s => s.EndDate).IsRequired(false);
