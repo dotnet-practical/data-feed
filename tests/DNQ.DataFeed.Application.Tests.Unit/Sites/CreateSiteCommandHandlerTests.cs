@@ -32,7 +32,7 @@ public class CreateSiteCommandHandlerTests
         _siteManager.CreateAsync(command.Code, command.Name).Returns(Task.FromResult(createdSite));
 
         _siteRepo.AddSite(createdSite).Returns(Task.CompletedTask);
-        _unitOfWork.CommitChangesAsync().Returns(Task.CompletedTask);
+        _unitOfWork.CommitChangesAsync(CancellationToken.None).Returns(Task.CompletedTask);
 
         /* Act */
         var result = await _sut.Handle(command, CancellationToken.None);
@@ -51,7 +51,7 @@ public class CreateSiteCommandHandlerTests
 
         _siteManager.CreateAsync(command.Code, command.Name).ThrowsAsync(new BussinessException(errorMessage));
         _siteRepo.AddSite(createdSite).Returns(Task.CompletedTask);
-        _unitOfWork.CommitChangesAsync().Returns(Task.CompletedTask);
+        _unitOfWork.CommitChangesAsync(CancellationToken.None).Returns(Task.CompletedTask);
 
         /* Act */
         Func<Task> result = async () => await _sut.Handle(command, CancellationToken.None);
@@ -70,7 +70,7 @@ public class CreateSiteCommandHandlerTests
 
         _siteManager.CreateAsync(command.Code, command.Name).Returns(Task.FromResult(createdSite));
         _siteRepo.AddSite(createdSite).ThrowsAsync(new BussinessException(errorMessage));
-        _unitOfWork.CommitChangesAsync().Returns(Task.CompletedTask);
+        _unitOfWork.CommitChangesAsync(CancellationToken.None).Returns(Task.CompletedTask);
 
         /* Act */
         Func<Task> result = async () => await _sut.Handle(command, CancellationToken.None);
@@ -89,7 +89,7 @@ public class CreateSiteCommandHandlerTests
 
         _siteManager.CreateAsync(command.Code, command.Name).Returns(Task.FromResult(createdSite));
         _siteRepo.AddSite(createdSite).Returns(Task.CompletedTask); 
-        _unitOfWork.CommitChangesAsync().ThrowsAsync(new BussinessException(errorMessage));
+        _unitOfWork.CommitChangesAsync(CancellationToken.None).ThrowsAsync(new BussinessException(errorMessage));
 
         /* Act */
         Func<Task> result = async () => await _sut.Handle(command, CancellationToken.None);

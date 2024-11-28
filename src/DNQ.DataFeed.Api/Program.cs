@@ -3,6 +3,7 @@ using DNQ.DataFeed.Api.Startup;
 using DNQ.DataFeed.Application;
 using DNQ.DataFeed.Domain;
 using DNQ.DataFeed.Persistence;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.ConfigAppSettings();
